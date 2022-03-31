@@ -44,6 +44,7 @@ function App() {
             path="/"
             element={
               <>
+                <h2>Set Price Tracker</h2>
                 <SearchSets />
                 <Top10 />
               </>
