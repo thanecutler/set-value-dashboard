@@ -1,0 +1,69 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  box-sizing: border-box;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+nav {
+  padding-left: 10%;
+  padding-right: 10%;
+}
+
+main {
+  padding-left: 15%;
+  padding-right: 15%;
+}
+
+.spacer {
+  height: 70px;
+  display: block;
+}
+
+.optionsContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  align-content: center;
+  margin-bottom: 10px;
+}
+
+.setFilterContainer {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.allSetsDataTable th {
+  position: sticky;
+  top: 56px;
+  border-bottom: 1px solid black;
+  background-color: white;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.submitSearch {
+  height: 38px;
+  width: 70px;
+  background-color: #2684ff;
+  font-weight: bold;
+  cursor: pointer;
+  color: white;
+  border-radius: 5px;
+  border: none;
+}
+
+.remove {
+  cursor: pointer;
+}
