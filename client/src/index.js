@@ -10,6 +10,7 @@ import SearchResults from "./components/SearchResults";
 import NotFound from "./components/NotFound";
 import PSATable from "./components/PSATable";
 import AddPSA from "./components/AddPSA";
+import TestChart from "./components/TestChart";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -18,6 +19,7 @@ ReactDOM.render(
         <Route path="/" element={<App />}>
           <Route path="/charts/*" element={<ChartSelector />} />
           <Route path="/allsets" element={<AllSets />} />
+          <Route path="/testchart" element={<TestChart />} />
           <Route path="/cards">
             <Route path=":set/:date" element={<SetCardTable />} />
           </Route>

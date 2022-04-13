@@ -1,32 +1,26 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Input, Table } from "reactstrap";
-import { priceFormatter, calcPercentChange } from "../helper/format";
+import { Input, Table, Spinner } from "reactstrap";
+import { priceFormatter, calcPercentChange, getColor } from "../helper/format";
 import { Link } from "react-router-dom";
 import ChartSVG from "../static/chart.svg";
 
 const AllSets = () => {
+  const [loading, setLoading] = useState(true);
   const [dataList, setDataList] = useState([]);
   const [filterBy, setFilterBy] = useState("");
   const [sortBy, setSortBy] = useState("set_name");
   useEffect(() => {
     axios.get("/api/sets/today").then((res) => {
+      setLoading(false);
       setDataList(res.data);
     });
   }, []);
 
-  const getColor = (today, yesterday) => {
-    if (today > yesterday) {
-      return "green";
-    } else if (today === yesterday) {
-      return "black";
-    }
-    return "red";
-  };
-
   return (
     <div>
-      <h3>All sets</h3>
+      <h3>All sets {!loading && `(${dataList.length})`}</h3>
+      {loading && <Spinner>Loading...</Spinner>}
       {dataList.length > 0 && (
         <div>
           <div className="setFilterContainer">
@@ -43,10 +37,10 @@ const AllSets = () => {
               <tr>
                 <th></th>
                 <th onClick={() => setSortBy("set_name")}>Set name</th>
-                <th onClick={() => setSortBy("card_count")}>Card count</th>
                 <th onClick={() => setSortBy("set_value")}>Today</th>
-                <th onClick={() => setSortBy("prev_value")}>Last week</th>
+                <th onClick={() => setSortBy("prev_value")}>14 day prev</th>
                 <th>Change</th>
+                <th onClick={() => setSortBy("card_count")}>Card count</th>
               </tr>
             </thead>
             <tbody>
@@ -56,20 +50,10 @@ const AllSets = () => {
                   <strong>Total</strong>
                 </td>
                 <td>
-                  {dataList
-                    .filter((el) => {
-                      return el.set_name
-                        .toLowerCase()
-                        .includes(filterBy.toLowerCase());
-                    })
-                    .map((el) => el.card_count)
-                    .reduce((prev, curr) => prev + curr, 0)}
-                </td>
-                <td>
                   {priceFormatter.format(
                     dataList
                       .filter((el) => {
-                        return el.set_name
+                        return (el.set_name || el.url)
                           .toLowerCase()
                           .includes(filterBy.toLowerCase());
                       })
@@ -81,7 +65,7 @@ const AllSets = () => {
                   {priceFormatter.format(
                     dataList
                       .filter((el) => {
-                        return el.set_name
+                        return (el.set_name || el.url)
                           .toLowerCase()
                           .includes(filterBy.toLowerCase());
                       })
@@ -89,10 +73,21 @@ const AllSets = () => {
                       .reduce((prev, curr) => prev + curr, 0)
                   )}
                 </td>
+                <td></td>
+                <td>
+                  {dataList
+                    .filter((el) => {
+                      return (el.set_name || el.url)
+                        .toLowerCase()
+                        .includes(filterBy.toLowerCase());
+                    })
+                    .map((el) => el.card_count)
+                    .reduce((prev, curr) => prev + curr, 0)}
+                </td>
               </tr>
               {dataList
                 .filter((el) => {
-                  return el.set_name
+                  return (el.set_name || el.url)
                     .toLowerCase()
                     .includes(filterBy.toLowerCase());
                 })
@@ -121,13 +116,8 @@ const AllSets = () => {
                           el.time_stamp.split("T")[0]
                         }`}
                       >
-                        {el.set_name}
+                        {el.set_name || el.url}
                       </Link>
-                    </td>
-                    <td>
-                      <a href={el.url} target="_blank">
-                        {el.card_count}
-                      </a>
                     </td>
                     <td>{priceFormatter.format(el.set_value)}</td>
                     <td>{priceFormatter.format(el.prev_value)}</td>
@@ -141,6 +131,11 @@ const AllSets = () => {
                           "+"}
                         {calcPercentChange(el.set_value, el.prev_value)}%
                       </span>
+                    </td>
+                    <td>
+                      <a href={el.url} target="_blank">
+                        {el.card_count}
+                      </a>
                     </td>
                   </tr>
                 ))}

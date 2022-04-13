@@ -32,8 +32,8 @@ app.get(`/api/sets/today`, (req, res) => {
     left join
     (select set_value as prev_value, set_name
     from set_data_table 
-    where DATE(time_stamp) = curdate() - 7) as yesterday
-    on today.set_name = yesterday.set_name
+    where DATE(time_stamp) = (DATE_SUB(CURDATE(), INTERVAL 14 DAY))) as yesterday
+    on today.set_name = coalesce(yesterday.set_name, today.set_name)
     order by today.set_name
     `,
     (e, results) => {
@@ -72,11 +72,61 @@ app.get(`/api/sets/set=:set/orderby=:orderby/dir=:direction`, (req, res) => {
   );
 });
 
+app.get(`/api/sets/dates/set=:set`, (req, res) => {
+  const { set } = req.params;
+  db.query(
+    `select distinct(date(time_stamp)) as 'date', set_value from set_data_table where set_name = ? order by date desc`,
+    [set],
+    (e, results) => {
+      res.json(results);
+    }
+  );
+});
+
+app.get(`/api/sets/list`, (req, res) => {
+  db.query(
+    `select distinct(set_name) from set_data_table order by set_name asc`,
+    (e, results) => {
+      res.json(results);
+    }
+  );
+});
+
 app.get(`/api/cards/set=:set/date=:date`, (req, res) => {
   const { set, date } = req.params;
-  const query = `select * from card_data_table where set_name = ? and date(time_stamp) = ? order by card_name`;
+  const query = `select * 
+  from (select card_name, price, time_stamp, rarity, card_number, url from card_data_table 
+  where DATE(time_stamp) = ? and set_name = ?) 
+  as today
+  left join
+  (select price as prev_value, card_name, set_name
+  from card_data_table 
+  where DATE(time_stamp) = (DATE_SUB(?, INTERVAL 7 DAY)) and set_name = ?) as yesterday
+  on today.card_name = yesterday.card_name
+  order by today.card_name`;
 
-  db.query(query, [set, date], (e, results) => {
+  db.query(query, [date, set, date, set], (e, results) => {
+    if (e) {
+      throw e;
+    }
+    res.json(results);
+  });
+});
+
+app.get(`/api/cards/set=:set/today`, (req, res) => {
+  const { set } = req.params;
+  const query = `select * 
+  from (select id, card_name, price, time_stamp, rarity, card_number, url from card_data_table 
+  where DATE(time_stamp) = curdate() and set_name = ?) 
+  as today
+  left join
+  (select price as prev_value, card_name, set_name
+  from card_data_table 
+  where DATE(time_stamp) = (DATE_SUB(curdate(), INTERVAL 7 DAY)) and set_name = ?) as yesterday
+  on today.card_name = yesterday.card_name
+  order by today.card_name`;
+
+  db.query(query, [set, set], (e, results) => {
     if (e) {
       throw e;
     }
@@ -86,7 +136,7 @@ app.get(`/api/cards/set=:set/date=:date`, (req, res) => {
 
 app.get(`/api/cards/top/today`, (req, res) => {
   db.query(
-    `select * from card_data_table where date(time_stamp) = curdate() - 1 order by price desc limit 10;`,
+    `select * from card_data_table where date(time_stamp) = curdate() order by price desc limit 10;`,
     (e, results) => {
       if (e) {
         throw e;
@@ -110,6 +160,8 @@ app.get(`/api/cards/search/name=:searchTerm`, (req, res) => {
     }
   );
 });
+
+// check
 
 app.post(`/api/check`, (req, res) => {
   const { card_name, set_name } = req.body;
@@ -143,6 +195,8 @@ app.post(`/api/check`, (req, res) => {
     }
   );
 });
+
+// psa
 
 app.post("/api/psa/add", (req, res) => {
   const { card_name, set_name, card_number, card_grade } = req.body;

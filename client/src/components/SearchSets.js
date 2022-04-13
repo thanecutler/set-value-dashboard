@@ -1,17 +1,18 @@
 import React, { useState } from "react";
-import { Input } from "reactstrap";
+import { Button, Input, InputGroup } from "reactstrap";
 import { useNavigate } from "react-router-dom";
 
 const SearchSets = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const goToSearch = (val) => {
-    navigate(`/search/name=${val}`);
+    val && navigate(`/search/name=${val}`);
   };
 
   return (
-    <div>
+    <InputGroup>
       <Input
+        color="dark"
         onChange={(e) => {
           setSearchTerm(e.target.value);
         }}
@@ -20,11 +21,17 @@ const SearchSets = () => {
             goToSearch(searchTerm);
           }
         }}
-        className="mb-3"
         placeholder="Search cards..."
         spellCheck="false"
       />
-    </div>
+      <Button
+        // color="primary"
+        disabled={!searchTerm}
+        onClick={() => goToSearch(searchTerm)}
+      >
+        Search
+      </Button>
+    </InputGroup>
   );
 };
 

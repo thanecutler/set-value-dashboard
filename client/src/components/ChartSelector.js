@@ -1,15 +1,21 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import ChartData from "./ChartData.js";
+const axios = require("axios");
 
 const ChartSelector = () => {
-  const setsOptions = require("../static/options.js").setsOptions;
-
+  const [setList, setSetList] = useState([]);
   const navigate = useNavigate();
   const goToSet = (set) => {
     navigate(`/charts/${set}`);
   };
+
+  useEffect(() => {
+    axios.get(`/api/sets/list`).then((res) => {
+      setSetList(res.data);
+    });
+  }, []);
 
   return (
     <div className="chartContainer">
@@ -17,7 +23,10 @@ const ChartSelector = () => {
         <div style={{ width: "100%" }}>
           <Select
             placeholder="Select a set..."
-            options={setsOptions}
+            options={setList.map((el) => ({
+              label: el.set_name,
+              value: el.set_name,
+            }))}
             onChange={(e) => {
               goToSet(e.value);
             }}
@@ -25,7 +34,14 @@ const ChartSelector = () => {
         </div>
       </div>
       <Routes>
-        <Route path="/:set" element={<ChartData />} />
+        <Route
+          path="/:set"
+          element={
+            <>
+              <ChartData />
+            </>
+          }
+        />
       </Routes>
     </div>
   );

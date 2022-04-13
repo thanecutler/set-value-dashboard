@@ -39,3 +39,12 @@ export const calcPercentChange = (curr, prev) => {
 export const getPerformance = (t1, t2) => {
   return ((t2 - t1) * 0.001).toFixed(2);
 };
+
+export const getColor = (today, yesterday) => {
+  if (today > yesterday) {
+    return "green";
+  } else if (today === yesterday) {
+    return "black";
+  }
+  return "red";
+};

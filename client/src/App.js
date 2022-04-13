@@ -35,7 +35,12 @@ function App() {
             </NavLink>
           </NavItem>
         </Nav>
-        <NavbarText>Current market value: $</NavbarText>
+        <Nav navbar>
+          <NavItem>
+            <SearchSets />
+          </NavItem>
+        </Nav>
+        {/* <NavbarText>Current market value: $</NavbarText> */}
       </Navbar>
       <div className="spacer"></div>
       <main>
@@ -45,7 +50,6 @@ function App() {
             element={
               <>
                 <h2>Set Price Tracker</h2>
-                <SearchSets />
                 <Top10 />
               </>
             }

@@ -2,13 +2,15 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 import Chart from "react-apexcharts";
-import { Button, Table, Collapse } from "reactstrap";
+import { Spinner } from "reactstrap";
 import { formatDate, priceFormatter } from "../helper/format";
+import CardTable from "./CardTable";
 
 const ChartData = () => {
   const { set } = useParams();
   const [data, setData] = useState([]);
-  const [showTable, setShowTable] = useState(false);
+  const [cardData, setCardData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [chartOptions, setChartOptions] = useState({
     chart: {
       id: "basic-bar",
@@ -29,16 +31,23 @@ const ChartData = () => {
           id: "basic-bar",
         },
         xaxis: {
-          categories: res.data.map((el) => formatDate(el.time_stamp)),
+          categories: res.data.map(
+            (el) => formatDate(el.time_stamp).split(",")[0]
+          ),
         },
       });
       setSeries([{ name: "Price", data: res.data.map((el) => el.set_value) }]);
+    });
+    axios.get(`/api/cards/set=${set}/today`).then((res) => {
+      setCardData(res.data);
+      setLoading(false);
     });
   }, [set]);
 
   return (
     <div>
-      {data.length > 0 && (
+      {loading && <Spinner>Loading...</Spinner>}
+      {!loading && (
         <>
           <h3>{set}</h3>
           <h4>
@@ -47,13 +56,12 @@ const ChartData = () => {
               {priceFormatter.format(data[data.length - 1].set_value)}
             </strong>
           </h4>
-          <span>
+          <span className="chartLink">
             <a href="#" target="_blank">
               TCGPlayer
             </a>
           </span>
-          {" | "}
-          <span>
+          <span className="chartLink">
             <a
               href={`https://www.ebay.com/sch/?_nkw=pokemon%20${set
                 .toLowerCase()
@@ -63,54 +71,23 @@ const ChartData = () => {
               eBay
             </a>
           </span>
+          <span className="chartLink">
+            <Link
+              to={`/cards/${set}/${
+                data[data.length - 1].time_stamp.split("T")[0]
+              }`}
+            >
+              Price history
+            </Link>
+          </span>
           <Chart
             options={chartOptions}
             series={series}
             type="line"
-            height="550"
+            height="auto"
           />
           <div className="tableContainer">
-            <Button
-              color="primary"
-              onClick={() => setShowTable(!showTable)}
-              style={{
-                marginBottom: "1rem",
-              }}
-            >
-              {showTable ? "Hide" : "Show"} history
-            </Button>
-            <Collapse isOpen={showTable}>
-              <Table hover>
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Price</th>
-                    <th>Card count</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data
-                    // .sort((a, b) => {
-                    //   return new Date(b.time_stamp) - new Date(a.time_stamp);
-                    // })
-                    .map((el) => (
-                      <tr key={el.uuid}>
-                        <td>
-                          <Link
-                            to={`/cards/${el.set_name}/${
-                              el.time_stamp.split("T")[0]
-                            }`}
-                          >
-                            {formatDate(el.time_stamp)}
-                          </Link>
-                        </td>
-                        <td>{priceFormatter.format(el.set_value)}</td>
-                        <td>{el.card_count}</td>
-                      </tr>
-                    ))}
-                </tbody>
-              </Table>
-            </Collapse>
+            <CardTable data={cardData} />
           </div>
         </>
       )}
