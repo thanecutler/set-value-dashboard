@@ -17,15 +17,15 @@ const CardTable = ({ data }) => {
   return (
     <div>
       <Input
-        placeholder="Filter"
+        placeholder='Filter'
         onChange={(e) => {
           setFilterBy(e.target.value);
         }}
-        className="mb-3"
+        className='mb-3'
       />
-      <Table hover className="allSetsDataTable">
+      <Table hover className='allSetsDataTable'>
         <thead>
-          <tr key="head">
+          <tr key='head'>
             <th onClick={() => setLocalSortBy("card_name")}>Title</th>
             <th onClick={() => setLocalSortBy("price")}>Price</th>
             <th onClick={() => setLocalSortBy("prev_value")}>Change</th>
@@ -48,11 +48,19 @@ const CardTable = ({ data }) => {
             .map((el) => (
               <tr key={el.id}>
                 <td>
-                  <a href={el.url} target="_blank" rel="noreferrer">
+                  <Link
+                    to={`/card/${el.set_name}/${
+                      el.card_name && el.card_name.replace("/", "%2F")
+                    }`}
+                  >
                     {el.card_name}
+                  </Link>
+                </td>
+                <td>
+                  <a href={el.url} target='_blank' rel='noreferrer'>
+                    {priceFormatter.format(el.price)}
                   </a>
                 </td>
-                <td>{priceFormatter.format(el.price)}</td>
                 {el.prev_value ? (
                   <td>
                     <span

@@ -3,7 +3,6 @@ import axios from "axios";
 import { Input, Table, Spinner } from "reactstrap";
 import { priceFormatter, calcPercentChange, getColor } from "../helper/format";
 import { Link } from "react-router-dom";
-import ChartSVG from "../static/chart.svg";
 
 const AllSets = () => {
   const [loading, setLoading] = useState(true);
@@ -23,19 +22,18 @@ const AllSets = () => {
       {loading && <Spinner>Loading...</Spinner>}
       {dataList.length > 0 && (
         <div>
-          <div className="setFilterContainer">
+          <div className='setFilterContainer'>
             <Input
-              placeholder="Filter"
+              placeholder='Filter'
               onChange={(e) => {
                 setFilterBy(e.target.value);
               }}
-              spellCheck="false"
+              spellCheck='false'
             />
           </div>
-          <Table hover className="allSetsDataTable">
+          <Table hover className='allSetsDataTable'>
             <thead>
               <tr>
-                <th></th>
                 <th onClick={() => setSortBy("set_name")}>Set name</th>
                 <th onClick={() => setSortBy("set_value")}>Today</th>
                 <th onClick={() => setSortBy("prev_value")}>14 day prev</th>
@@ -45,10 +43,7 @@ const AllSets = () => {
             </thead>
             <tbody>
               <tr>
-                <td></td>
-                <td>
-                  <strong>Total</strong>
-                </td>
+                <td>Total</td>
                 <td>
                   {priceFormatter.format(
                     dataList
@@ -94,28 +89,10 @@ const AllSets = () => {
                 .sort((a, b) => {
                   return b[sortBy] - a[sortBy];
                 })
-                .map((el, ind) => (
-                  <tr
-                    onDoubleClick={() => {
-                      dataList.splice(ind, 1);
-                      setDataList(dataList);
-                    }}
-                    key={el.uuid}
-                  >
+                .map((el) => (
+                  <tr key={el.uuid}>
                     <td>
                       <Link to={`/charts/${el.set_name}`}>
-                        <img
-                          src={ChartSVG}
-                          style={{ width: "20px", opacity: "0.4" }}
-                        />
-                      </Link>
-                    </td>
-                    <td>
-                      <Link
-                        to={`/cards/${el.set_name}/${
-                          el.time_stamp.split("T")[0]
-                        }`}
-                      >
                         {el.set_name || el.url}
                       </Link>
                     </td>
@@ -133,7 +110,7 @@ const AllSets = () => {
                       </span>
                     </td>
                     <td>
-                      <a href={el.url} target="_blank">
+                      <a href={el.url} target='_blank' rel='noreferrer'>
                         {el.card_count}
                       </a>
                     </td>

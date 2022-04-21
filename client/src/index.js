@@ -11,22 +11,27 @@ import NotFound from "./components/NotFound";
 import PSATable from "./components/PSATable";
 import AddPSA from "./components/AddPSA";
 import TestChart from "./components/TestChart";
+import CardPriceHistory from "./components/CardPriceHistory";
 
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<App />}>
-          <Route path="/charts/*" element={<ChartSelector />} />
-          <Route path="/allsets" element={<AllSets />} />
-          <Route path="/testchart" element={<TestChart />} />
-          <Route path="/cards">
-            <Route path=":set/:date" element={<SetCardTable />} />
+        <Route path='/' element={<App />}>
+          <Route path='/charts/*' element={<ChartSelector />} />
+          <Route path='/allsets' element={<AllSets />} />
+          <Route path='/testchart' element={<TestChart />} />
+          <Route path='/cards'>
+            <Route path=':set/:date' element={<SetCardTable />} />
           </Route>
-          <Route path="/psa" element={<PSATable />} />
-          <Route path="/psa/add" element={<AddPSA />} />
-          <Route path="/search/name=:searchName" element={<SearchResults />} />
-          <Route path="*" element={<NotFound />} />
+          <Route path='/psa' element={<PSATable />} />
+          <Route path='/psa/add' element={<AddPSA />} />
+          <Route path='/search/name=:searchName' element={<SearchResults />} />
+          <Route
+            path='/card/:setName/:cardName'
+            element={<CardPriceHistory />}
+          />
+          <Route path='*' element={<NotFound />} />
         </Route>
       </Routes>
     </BrowserRouter>
