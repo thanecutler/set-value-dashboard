@@ -30,7 +30,7 @@ const SetCardTable = () => {
     axios.get(`/api/sets/list`).then((res) => {
       setSetList(res.data);
     });
-  }, [set, date]);
+  }, [set, date, url]);
 
   return (
     <div>
@@ -39,13 +39,15 @@ const SetCardTable = () => {
       {data.length > 0 && (
         <>
           <div>
-            <h4>{set}</h4>
+            <h4>
+              <Link to={`/charts/${set}`}>{set}</Link>
+            </h4>
           </div>
-          <div className="setCardTableHeader">
-            <div className="selectColumn">
+          <div className='setCardTableHeader'>
+            <div className='selectColumn'>
               <Select
-                className="setDataSelect"
-                placeholder="Set name"
+                className='setDataSelect'
+                placeholder='Set name'
                 options={setList.map((el) => ({
                   label: el.set_name,
                   value: el.set_name,
@@ -53,7 +55,7 @@ const SetCardTable = () => {
                 onChange={(e) => goToSet(e.value, date)}
               />
             </div>
-            <div className="selectColumn">
+            <div className='selectColumn'>
               <strong>
                 {formatDate(date)} - {data.length} cards{" "}
                 {priceFormatter.format(
@@ -61,10 +63,10 @@ const SetCardTable = () => {
                 )}
               </strong>
             </div>
-            <div className="selectColumn">
+            <div className='selectColumn'>
               <Select
-                className="setDateSelect"
-                placeholder="Card prices by date"
+                className='setDateSelect'
+                placeholder='Card prices by date'
                 options={dateList.map((el) => ({
                   label: `${formatDate(el.date)} - ${priceFormatter.format(
                     el.set_value

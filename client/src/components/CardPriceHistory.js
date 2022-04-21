@@ -19,6 +19,9 @@ const CardPriceHistory = () => {
     xaxis: {
       categories: [data.map((el) => el.time_stamp)],
     },
+    stroke: {
+      curve: "smooth",
+    },
   });
   const [series, setSeries] = useState([
     { name: "series", data: [data.map((el) => el.price)] },
@@ -63,7 +66,7 @@ const CardPriceHistory = () => {
         <div className='selectColumn'>
           {setList.length > 0 && (
             <Select
-              placeholder={setName}
+              placeholder={`${setName} - cards`}
               options={setList.map((el) => ({
                 label: el.card_name,
                 value: el.card_name,

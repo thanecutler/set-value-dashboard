@@ -12,6 +12,11 @@ const ChartData = () => {
   const [cardData, setCardData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [chartOptions, setChartOptions] = useState({
+    series: [
+      {
+        name: set,
+      },
+    ],
     chart: {
       id: "basic-bar",
     },
@@ -56,22 +61,23 @@ const ChartData = () => {
               {priceFormatter.format(data[data.length - 1].set_value)}
             </strong>
           </h4>
-          <span className="chartLink">
-            <a href="#" target="_blank">
+          <span className='chartLink'>
+            <a href={data[0].url} target='_blank' rel='noreferrer'>
               TCGPlayer
             </a>
           </span>
-          <span className="chartLink">
+          <span className='chartLink'>
             <a
               href={`https://www.ebay.com/sch/?_nkw=pokemon%20${set
                 .toLowerCase()
                 .replace(" ", "%20")}%20complete&_sop=16`}
-              target="_blank"
+              target='_blank'
+              rel='noreferrer'
             >
               eBay
             </a>
           </span>
-          <span className="chartLink">
+          <span className='chartLink'>
             <Link
               to={`/cards/${set}/${
                 data[data.length - 1].time_stamp.split("T")[0]
@@ -80,13 +86,8 @@ const ChartData = () => {
               Price history
             </Link>
           </span>
-          <Chart
-            options={chartOptions}
-            series={series}
-            type="line"
-            height="auto"
-          />
-          <div className="tableContainer">
+          <Chart options={chartOptions} series={series} height='auto' />
+          <div className='tableContainer'>
             <CardTable data={cardData} />
           </div>
         </>

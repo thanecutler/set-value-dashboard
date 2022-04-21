@@ -12,16 +12,7 @@ function App() {
           <NavbarBrand tag={Link} to='/'>
             Set Price Tracker
           </NavbarBrand>
-          <NavItem>
-            <NavLink tag={Link} to='/allsets'>
-              All sets
-            </NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink tag={Link} to='/charts'>
-              Charts
-            </NavLink>
-          </NavItem>
+
           <NavItem>
             <NavLink tag={Link} to='/psa'>
               PSA
