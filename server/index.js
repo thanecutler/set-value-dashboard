@@ -4,6 +4,7 @@ const port = 5000;
 const config = require("./config");
 const mysql = require("mysql2");
 const cors = require("cors");
+const path = require("path");
 
 app.use(express.json());
 app.use(cors());
@@ -17,10 +18,6 @@ const db = mysql.createPool(config.db);
 
 app.listen(port, () => {
   console.log(`server running at localhost:${port}`);
-});
-
-app.get("/", (req, res) => {
-  res.status(200);
 });
 
 app.get(`/api/sets/today`, (req, res) => {
@@ -248,3 +245,10 @@ app.delete("/api/psa/remove", (req, res) => {
     res.send(results);
   });
 });
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../client/build")));
+  app.get("/*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../client/build", "index.html"));
+  });
+}
