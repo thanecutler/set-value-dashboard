@@ -1,9 +1,15 @@
 import React, { useState } from "react";
 import { Table, Input } from "reactstrap";
 import { Link } from "react-router-dom";
-import { priceFormatter, getColor, calcPercentChange } from "../helper/format";
+import {
+  priceFormatter,
+  getColor,
+  calcPercentChange,
+  formatDate,
+} from "../helper/format";
+import axios from "axios";
 
-const CardTable = ({ data }) => {
+const CardTable = ({ data, series, setSeries }) => {
   const [sortBy, setSortBy] = useState(
     window.localStorage.getItem("sortBy") || "card_name"
   );
@@ -13,19 +19,42 @@ const CardTable = ({ data }) => {
     window.localStorage.setItem("sortBy", sortBy);
     setSortBy(sortBy);
   };
-
+  const [trackedCards, setTrackedCards] = useState([]);
+  const addCardToSeries = (setName, cardName) => {
+    if (!series) {
+      return;
+    }
+    if (trackedCards.includes(cardName)) {
+      return;
+    }
+    if (!trackedCards.includes(cardName)) {
+      setTrackedCards(trackedCards.concat([cardName]));
+      axios
+        .get(`/api/card/set=${setName}/card=${cardName.replace("/", "%2F")}`)
+        .then((res) => {
+          setSeries(
+            series.concat([
+              {
+                name: cardName,
+                data: Array(17).concat(res.data.map((el) => el.price)),
+              },
+            ])
+          );
+        });
+    }
+  };
   return (
     <div>
       <Input
-        placeholder='Filter'
+        placeholder="Filter"
         onChange={(e) => {
           setFilterBy(e.target.value);
         }}
-        className='mb-3'
+        className="mb-3"
       />
-      <Table hover className='allSetsDataTable'>
+      <Table hover className="allSetsDataTable">
         <thead>
-          <tr key='head'>
+          <tr key="head">
             <th onClick={() => setLocalSortBy("card_name")}>Title</th>
             <th onClick={() => setLocalSortBy("price")}>Price</th>
             <th onClick={() => setLocalSortBy("prev_value")}>Change</th>
@@ -57,7 +86,7 @@ const CardTable = ({ data }) => {
                   </Link>
                 </td>
                 <td>
-                  <a href={el.url} target='_blank' rel='noreferrer'>
+                  <a href={el.url} target="_blank" rel="noreferrer">
                     {priceFormatter.format(el.price)}
                   </a>
                 </td>
@@ -87,7 +116,9 @@ const CardTable = ({ data }) => {
                     {el.set_name}
                   </Link>
                 </td>
-                <td>{el.card_number}</td>
+                <td onClick={() => addCardToSeries(el.set_name, el.card_name)}>
+                  {el.card_number}
+                </td>
                 {/* <td>{el.rarity}</td> */}
               </tr>
             ))}

@@ -91,8 +91,6 @@ app.get(`/api/sets/list`, (req, res) => {
 
 app.get(`/api/card/set=:setName/card=:cardName`, (req, res) => {
   const { setName, cardName } = req.params;
-  console.log(setName);
-  console.log(cardName);
   db.query(
     `select * from card_data_table where card_name = ? and set_name = ?`,
     [cardName, setName],
