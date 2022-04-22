@@ -6,18 +6,18 @@ import SearchSets from "./components/SearchSets";
 
 function App() {
   return (
-    <div className='app'>
-      <Navbar color='dark' dark expand='md' fixed='top'>
-        <Nav className='me-auto' navbar>
-          <NavbarBrand tag={Link} to='/'>
+    <div className="app">
+      <Navbar color="dark" dark expand="md" fixed="top">
+        <Nav className="me-auto" navbar>
+          <NavbarBrand tag={Link} to="/">
             Set Price Tracker
           </NavbarBrand>
 
-          <NavItem>
+          {/* <NavItem>
             <NavLink tag={Link} to='/psa'>
               PSA
             </NavLink>
-          </NavItem>
+          </NavItem> */}
         </Nav>
         <Nav navbar>
           <NavItem>
@@ -26,11 +26,11 @@ function App() {
         </Nav>
         {/* <NavbarText>Current market value: $</NavbarText> */}
       </Navbar>
-      <div className='spacer'></div>
+      <div className="spacer"></div>
       <main>
         <Routes>
           <Route
-            path='/'
+            path="/"
             element={
               <>
                 <h2>Set Price Tracker</h2>

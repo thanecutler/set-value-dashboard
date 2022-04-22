@@ -13,7 +13,7 @@ const ChartData = () => {
   const [loading, setLoading] = useState(true);
   const [chartOptions, setChartOptions] = useState({
     chart: {
-      id: "basic-bar",
+      id: set,
     },
     title: {
       text: set,
@@ -33,7 +33,9 @@ const ChartData = () => {
           ),
         },
       });
-      setSeries([{ name: "Price", data: res.data.map((el) => el.set_value) }]);
+      setSeries([
+        { name: "Total set price", data: res.data.map((el) => el.set_value) },
+      ]);
     });
     axios.get(`/api/cards/set=${set}/today`).then((res) => {
       setCardData(res.data);

@@ -21,22 +21,21 @@ const CardTable = ({ data, series, setSeries }) => {
   };
   const [trackedCards, setTrackedCards] = useState([]);
   const addCardToSeries = (setName, cardName) => {
-    if (!series) {
-      return;
-    }
-    if (trackedCards.includes(cardName)) {
+    if (!series || trackedCards.includes(cardName)) {
       return;
     }
     if (!trackedCards.includes(cardName)) {
-      setTrackedCards(trackedCards.concat([cardName]));
       axios
         .get(`/api/card/set=${setName}/card=${cardName.replace("/", "%2F")}`)
         .then((res) => {
+          setTrackedCards(trackedCards.concat([cardName]));
           setSeries(
             series.concat([
               {
                 name: cardName,
-                data: Array(17).concat(res.data.map((el) => el.price)),
+                data: Array(17)
+                  .fill(0)
+                  .concat(res.data.map((el) => el.price)),
               },
             ])
           );
@@ -75,7 +74,10 @@ const CardTable = ({ data, series, setSeries }) => {
               return b[sortBy] - a[sortBy];
             })
             .map((el) => (
-              <tr key={el.id}>
+              <tr
+                key={el.id}
+                onDoubleClick={() => addCardToSeries(el.set_name, el.card_name)}
+              >
                 <td>
                   <Link
                     to={`/card/${el.set_name}/${
@@ -116,9 +118,7 @@ const CardTable = ({ data, series, setSeries }) => {
                     {el.set_name}
                   </Link>
                 </td>
-                <td onClick={() => addCardToSeries(el.set_name, el.card_name)}>
-                  {el.card_number}
-                </td>
+                <td>{el.card_number}</td>
                 {/* <td>{el.rarity}</td> */}
               </tr>
             ))}

@@ -158,8 +158,13 @@ app.get(`/api/cards/search/name=:searchTerm`, (req, res) => {
   const { searchTerm } = req.params;
 
   db.query(
-    `select * from card_data_table where card_name like ? and date(time_stamp) = curdate() order by card_name;`,
-    `%${searchTerm}%`,
+    `select * from card_data_table 
+    where date(time_stamp) = curdate() 
+    and card_name like ? or date(time_stamp) = curdate() 
+    and card_name like ? or date(time_stamp) = curdate() 
+    and card_name like ? 
+    order by card_name;`,
+    [`${searchTerm} %`, `${searchTerm}`, `% ${searchTerm} %`],
     (e, results) => {
       if (e) {
         throw e;
