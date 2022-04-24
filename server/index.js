@@ -141,6 +141,26 @@ app.get(`/api/cards/set=:set/today`, (req, res) => {
     res.json(results);
   });
 });
+app.get(`/api/cards/set=:set/today/price`, (req, res) => {
+  const { set } = req.params;
+  const query = `select * 
+  from (select id, card_name, price, time_stamp, rarity, card_number, url from card_data_table 
+  where DATE(time_stamp) = curdate() and set_name = ?) 
+  as today
+  left join
+  (select price as prev_value, card_name, set_name
+  from card_data_table 
+  where DATE(time_stamp) = (DATE_SUB(curdate(), INTERVAL 7 DAY)) and set_name = ?) as yesterday
+  on today.card_name = yesterday.card_name
+  order by today.price desc`;
+
+  db.query(query, [set, set], (e, results) => {
+    if (e) {
+      throw e;
+    }
+    res.json(results);
+  });
+});
 
 app.get(`/api/cards/top/today`, (req, res) => {
   db.query(
