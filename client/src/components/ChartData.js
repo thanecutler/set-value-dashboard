@@ -42,6 +42,7 @@ const ChartData = () => {
     }
   };
   useEffect(() => {
+    setLoading(true);
     axios.get(`/api/sets/set=${set}/orderby=time_stamp/dir=asc`).then((res) => {
       setData(res.data);
       setChartOptions({
@@ -62,7 +63,7 @@ const ChartData = () => {
         ...donutOptions,
         labels: res.data
           .sort((a, b) => (a.price < b.price ? 1 : -1))
-          .map((el) => el.card_name)
+          .map((el) => `${el.card_name} - ${priceFormatter.format(el.price)}`)
           .slice(0, 30),
       });
       setDonutSeries(
@@ -117,7 +118,7 @@ const ChartData = () => {
           <Nav tabs>
             <NavItem>
               <NavLink
-                className={{ active: activeTab === "1" }}
+                className={activeTab === "1" ? "active" : ""}
                 onClick={() => {
                   toggle("1");
                 }}
@@ -127,7 +128,7 @@ const ChartData = () => {
             </NavItem>
             <NavItem>
               <NavLink
-                className={{ active: activeTab === "2" }}
+                className={activeTab === "2" ? "active" : ""}
                 onClick={() => {
                   toggle("2");
                 }}
