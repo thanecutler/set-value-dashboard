@@ -12,6 +12,7 @@ import {
 } from "reactstrap";
 import { formatDate, priceFormatter } from "../helper/format";
 import CardTable from "./CardTable";
+import classnames from "classnames";
 
 const ChartData = () => {
   const { set } = useParams();
@@ -51,6 +52,7 @@ const ChartData = () => {
           categories: res.data.map(
             (el) => formatDate(el.time_stamp).split(",")[0]
           ),
+          tickAmount: res.data.length / 15,
         },
       });
       setSeries([
@@ -88,24 +90,24 @@ const ChartData = () => {
               {priceFormatter.format(data[data.length - 1].set_value)}
             </strong>
           </h4>
-          <div className='mb-3'>
-            <span className='chartLink'>
-              <a href={data[0].url} target='_blank' rel='noreferrer'>
+          <div className="mb-3">
+            <span className="chartLink">
+              <a href={data[0].url} target="_blank" rel="noreferrer">
                 TCGPlayer
               </a>
             </span>
-            <span className='chartLink'>
+            <span className="chartLink">
               <a
                 href={`https://www.ebay.com/sch/?_nkw=pokemon%20${set
                   .toLowerCase()
                   .replace(" ", "%20")}%20complete&_sop=16`}
-                target='_blank'
-                rel='noreferrer'
+                target="_blank"
+                rel="noreferrer"
               >
                 eBay
               </a>
             </span>
-            <span className='chartLink'>
+            <span className="chartLink">
               <Link
                 to={`/cards/${set}/${
                   data[data.length - 1].time_stamp.split("T")[0]
@@ -118,7 +120,7 @@ const ChartData = () => {
           <Nav tabs>
             <NavItem>
               <NavLink
-                className={activeTab === "1" ? "active" : ""}
+                className={classnames({ active: activeTab === "1" })}
                 onClick={() => {
                   toggle("1");
                 }}
@@ -128,7 +130,7 @@ const ChartData = () => {
             </NavItem>
             <NavItem>
               <NavLink
-                className={activeTab === "2" ? "active" : ""}
+                className={classnames({ active: activeTab === "2" })}
                 onClick={() => {
                   toggle("2");
                 }}
@@ -138,9 +140,9 @@ const ChartData = () => {
             </NavItem>
           </Nav>
           <TabContent activeTab={activeTab}>
-            <TabPane tabId='1'>
-              <Chart options={chartOptions} series={series} height='auto' />
-              <div className='tableContainer'>
+            <TabPane tabId="1">
+              <Chart options={chartOptions} series={series} height="auto" />
+              <div className="tableContainer">
                 <CardTable
                   data={cardData}
                   series={series}
@@ -148,12 +150,12 @@ const ChartData = () => {
                 />
               </div>
             </TabPane>
-            <TabPane tabId='2'>
+            <TabPane tabId="2">
               <Chart
                 options={donutOptions}
                 series={donutSeries}
-                type='donut'
-                height='600px'
+                type="donut"
+                height="600px"
               />
             </TabPane>
           </TabContent>
