@@ -12,12 +12,11 @@ function App() {
           <NavbarBrand tag={Link} to="/">
             Set Price Tracker
           </NavbarBrand>
-
-          {/* <NavItem>
-            <NavLink tag={Link} to='/psa'>
-              PSA
+          <NavItem>
+            <NavLink tag={Link} to="/stats">
+              Stats
             </NavLink>
-          </NavItem> */}
+          </NavItem>
         </Nav>
         <Nav navbar>
           <NavItem>
