@@ -41,6 +41,21 @@ app.post(`/api/register`, (req, res) => {
   });
 });
 
+app.get(`/api/databasestats`, (req, res) => {
+  db.query(
+    `select 
+  (select count(*) from card_data_table
+  ) as card_row_count,
+  (select count(*) from set_data_table
+  ) as set_row_count,
+  (select max(time_stamp) from card_data_table
+  ) as time_completed`,
+    (e, results) => {
+      res.json(results);
+    }
+  );
+});
+
 app.get(`/api/sets/today`, (req, res) => {
   db.query(
     `select * 
