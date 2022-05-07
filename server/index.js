@@ -5,6 +5,8 @@ const config = require("./config");
 const mysql = require("mysql2");
 const cors = require("cors");
 const path = require("path");
+const bcrypt = require("bcrypt");
+const saltRounds = config.saltRounds;
 
 app.use(express.json());
 app.use(cors());
@@ -18,6 +20,25 @@ const db = mysql.createPool(config.db);
 
 app.listen(port, () => {
   console.log(`server running at localhost:${port}`);
+});
+
+app.post(`/api/register`, (req, res) => {
+  const { username, password, email } = req.body;
+  bcrypt.hash(password, saltRounds, (err, hash) => {
+    if (err) {
+      console.log(err);
+    }
+    db.query(
+      `insert into users (username, password, email) values (?, ?, ?)`,
+      [username, password, email],
+      (e, results) => {
+        if (e) {
+          console.log(e);
+        }
+        res.status(200).json({ msg: "good" });
+      }
+    );
+  });
 });
 
 app.get(`/api/sets/today`, (req, res) => {
