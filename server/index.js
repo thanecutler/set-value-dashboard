@@ -6,6 +6,7 @@ const mysql = require("mysql2");
 const cors = require("cors");
 const path = require("path");
 const bcrypt = require("bcrypt");
+const session = require("express-session");
 const saltRounds = config.saltRounds;
 
 app.use(express.json());
@@ -13,6 +14,16 @@ app.use(cors());
 app.use(
   express.urlencoded({
     extended: true,
+  })
+);
+
+app.use(
+  session({
+    key: "username",
+    secret: config.sessionSecret,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { expires: 1000 * 60 * 60 * 24 },
   })
 );
 
@@ -24,21 +35,70 @@ app.listen(port, () => {
 
 app.post(`/api/register`, (req, res) => {
   const { username, password, email } = req.body;
-  bcrypt.hash(password, saltRounds, (err, hash) => {
-    if (err) {
-      console.log(err);
-    }
-    db.query(
-      `insert into users (username, password, email) values (?, ?, ?)`,
-      [username, password, email],
-      (e, results) => {
-        if (e) {
-          console.log(e);
-        }
-        res.status(200).json({ msg: "good" });
+  if (!username || !password || !email) {
+    res.status(400).json({ msg: "error: missing parameters" });
+  }
+  db.query(
+    `select * from users where username = ?`,
+    [username],
+    (e, results) => {
+      if (results.length > 0) {
+        res.status(400).json({ msg: "error: username already exists" });
+        return;
+      } else {
+        bcrypt.hash(password, saltRounds, (err, hash) => {
+          if (err) {
+            console.log(err);
+          }
+          db.query(
+            `insert into users (username, password, email) values (?, ?, ?)`,
+            [username, hash, email],
+            (e, results) => {
+              if (e) {
+                console.log(e);
+              }
+              res.status(200).json({ msg: "good" });
+            }
+          );
+        });
       }
-    );
-  });
+    }
+  );
+});
+
+app.post(`/api/login`, (req, res) => {
+  const { username, password } = req.body;
+  db.query(
+    `select * from users where username = ?`,
+    [username],
+    (e, results) => {
+      if (e) {
+        console.log(e);
+      }
+      if (!results.length) {
+        res.send({ msg: "Username not found" });
+      }
+      if (results.length) {
+        bcrypt.compare(password, results[0].password, (e, response) => {
+          if (response) {
+            req.session.user = results[0].username;
+            console.log(req.session.user);
+            res.send(results);
+          } else {
+            res.send({ msg: "Incorrect password" });
+          }
+        });
+      }
+    }
+  );
+});
+
+app.get(`/api/login`, (req, res) => {
+  if (req.session.user) {
+    res.send({ loggedIn: true, username: req.session.user });
+  } else {
+    res.send({ loggedIn: false });
+  }
 });
 
 app.get(`/api/databasestats`, (req, res) => {
@@ -57,6 +117,7 @@ app.get(`/api/databasestats`, (req, res) => {
 });
 
 app.get(`/api/sets/today`, (req, res) => {
+  console.log(req.headers);
   db.query(
     `select * 
     from (select * from set_data_table 
