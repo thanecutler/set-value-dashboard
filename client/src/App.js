@@ -1,35 +1,28 @@
 import "./App.css";
-import { Nav, Navbar, NavbarBrand, NavItem, NavLink } from "reactstrap";
-import { Link, Outlet, Routes, Route } from "react-router-dom";
+import { Outlet, Routes, Route } from "react-router-dom";
 import AllSets from "./components/AllSets";
-import SearchSets from "./components/SearchSets";
+import NavHeader from "./components/NavHeader";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 function App() {
+  axios.defaults.withCredentials = true;
+  const [username, setUsername] = useState("");
+  useEffect(() => {
+    axios.get(`/api/login`).then((res) => {
+      if (res.data.username) {
+        setUsername(res.data.username);
+      }
+    });
+  }, []);
   return (
-    <div className="app">
-      <Navbar color="dark" dark expand="md" fixed="top">
-        <Nav className="me-auto" navbar>
-          <NavbarBrand tag={Link} to="/">
-            Set Price Tracker
-          </NavbarBrand>
-          <NavItem>
-            <NavLink tag={Link} to="/stats">
-              Stats
-            </NavLink>
-          </NavItem>
-        </Nav>
-        <Nav navbar>
-          <NavItem>
-            <SearchSets />
-          </NavItem>
-        </Nav>
-        {/* <NavbarText>Current market value: $</NavbarText> */}
-      </Navbar>
-      <div className="spacer"></div>
+    <div className='app'>
+      <NavHeader username={username} />
+      <div className='spacer'></div>
       <main>
         <Routes>
           <Route
-            path="/"
+            path='/'
             element={
               <>
                 <h2>Set Price Tracker</h2>

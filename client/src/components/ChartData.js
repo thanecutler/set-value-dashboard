@@ -11,7 +11,7 @@ import {
   NavLink,
 } from "reactstrap";
 import { formatDate, priceFormatter } from "../helper/format";
-import CardTable from "./CardTable";
+import CardTable from "./dumb/CardTable";
 import classnames from "classnames";
 
 const ChartData = () => {
@@ -90,24 +90,24 @@ const ChartData = () => {
               {priceFormatter.format(data[data.length - 1].set_value)}
             </strong>
           </h4>
-          <div className="mb-3">
-            <span className="chartLink">
-              <a href={data[0].url} target="_blank" rel="noreferrer">
+          <div className='mb-3'>
+            <span className='chartLink'>
+              <a href={data[0].url} target='_blank' rel='noreferrer'>
                 TCGPlayer
               </a>
             </span>
-            <span className="chartLink">
+            <span className='chartLink'>
               <a
                 href={`https://www.ebay.com/sch/?_nkw=pokemon%20${set
                   .toLowerCase()
                   .replace(" ", "%20")}%20complete&_sop=16`}
-                target="_blank"
-                rel="noreferrer"
+                target='_blank'
+                rel='noreferrer'
               >
                 eBay
               </a>
             </span>
-            <span className="chartLink">
+            <span className='chartLink'>
               <Link
                 to={`/cards/${set}/${
                   data[data.length - 1].time_stamp.split("T")[0]
@@ -140,9 +140,9 @@ const ChartData = () => {
             </NavItem>
           </Nav>
           <TabContent activeTab={activeTab}>
-            <TabPane tabId="1">
-              <Chart options={chartOptions} series={series} height="auto" />
-              <div className="tableContainer">
+            <TabPane tabId='1'>
+              <Chart options={chartOptions} series={series} height='auto' />
+              <div className='tableContainer'>
                 <CardTable
                   data={cardData}
                   series={series}
@@ -150,12 +150,12 @@ const ChartData = () => {
                 />
               </div>
             </TabPane>
-            <TabPane tabId="2">
+            <TabPane tabId='2'>
               <Chart
                 options={donutOptions}
                 series={donutSeries}
-                type="donut"
-                height="600px"
+                type='donut'
+                height='600px'
               />
             </TabPane>
           </TabContent>

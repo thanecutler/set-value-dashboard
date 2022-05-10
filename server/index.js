@@ -200,15 +200,15 @@ app.get(`/api/card/set=:setName/card=:cardName`, (req, res) => {
 app.get(`/api/cards/set=:set/date=:date`, (req, res) => {
   const { set, date } = req.params;
   const query = `select * 
-  from (select card_name, price, time_stamp, rarity, card_number, url from card_data_table 
+  from (select card_name, set_name, price, time_stamp, rarity, card_number, url from card_data_table 
   where DATE(time_stamp) = ? and set_name = ?) 
   as today
-  left join
-  (select price as prev_value, card_name, set_name
-  from card_data_table 
-  where DATE(time_stamp) = (DATE_SUB(?, INTERVAL 7 DAY)) and set_name = ?) as yesterday
-  on today.card_name = yesterday.card_name
   order by today.card_name`;
+  // left join
+  // (select price as prev_value, card_name, set_name
+  // from card_data_table
+  // where DATE(time_stamp) = (DATE_SUB(?, INTERVAL 7 DAY)) and set_name = ?) as yesterday
+  // on today.card_name = yesterday.card_name
 
   db.query(query, [date, set, date, set], (e, results) => {
     if (e) {

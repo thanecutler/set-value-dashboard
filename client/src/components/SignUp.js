@@ -8,12 +8,12 @@ const SignUp = () => {
     setSignUpParams({ ...signUpParams, [key]: value });
   };
   const submitSignUpParams = () => {
-    console.log(signUpParams);
-    axios.post(`/api/register`, signUpParams).then((res) => {
-      if (res.status < 400) {
-        console.log("success");
-      }
-    });
+    axios
+      .post(`/api/register`, signUpParams)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((e) => console.log(e));
   };
   return (
     <div>

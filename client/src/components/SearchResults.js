@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import CardTable from "./CardTable";
+import CardTable from "./dumb/CardTable";
 import { getPerformance } from "../helper/format";
 import { Spinner } from "reactstrap";
 
@@ -24,10 +24,10 @@ const SearchResults = () => {
 
   return (
     <div>
-      {loading && <Spinner className="spinner">Loading...</Spinner>}
+      {loading && <Spinner className='spinner'>Loading...</Spinner>}
       {!loading && (
         <>
-          <div className="mb-3">
+          <div className='mb-3'>
             Results for '<strong>{searchName}</strong>':{" "}
             {!loading && data.length}
             <div>Executed in {getPerformance(t1, t2)} seconds</div>

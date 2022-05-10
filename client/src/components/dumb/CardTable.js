@@ -6,7 +6,7 @@ import {
   getColor,
   calcPercentChange,
   formatDate,
-} from "../helper/format";
+} from "../../helper/format";
 import axios from "axios";
 
 const CardTable = ({ data, series, setSeries }) => {
@@ -14,7 +14,7 @@ const CardTable = ({ data, series, setSeries }) => {
     window.localStorage.getItem("sortBy") || "card_name"
   );
   const [filterBy, setFilterBy] = useState("");
-
+  const [addingCard, setAddingCard] = useState("");
   const setLocalSortBy = (sortBy) => {
     window.localStorage.setItem("sortBy", sortBy);
     setSortBy(sortBy);
@@ -25,6 +25,7 @@ const CardTable = ({ data, series, setSeries }) => {
       return;
     }
     if (!trackedCards.includes(cardName)) {
+      setAddingCard(cardName);
       axios
         .get(`/api/card/set=${setName}/card=${cardName.replace("/", "%2F")}`)
         .then((res) => {
@@ -39,21 +40,22 @@ const CardTable = ({ data, series, setSeries }) => {
               },
             ])
           );
+          setAddingCard("");
         });
     }
   };
   return (
     <div>
       <Input
-        placeholder="Filter"
+        placeholder='Filter'
         onChange={(e) => {
           setFilterBy(e.target.value);
         }}
-        className="mb-3"
+        className='mb-3'
       />
-      <Table hover className="allSetsDataTable">
+      <Table hover className='allSetsDataTable'>
         <thead>
-          <tr key="head">
+          <tr key='head'>
             <th onClick={() => setLocalSortBy("card_name")}>Title</th>
             <th onClick={() => setLocalSortBy("price")}>Price</th>
             <th onClick={() => setLocalSortBy("prev_value")}>Change</th>
@@ -79,16 +81,20 @@ const CardTable = ({ data, series, setSeries }) => {
                 onDoubleClick={() => addCardToSeries(el.set_name, el.card_name)}
               >
                 <td>
-                  <Link
-                    to={`/card/${el.set_name}/${
-                      el.card_name && el.card_name.replace("/", "%2F")
-                    }`}
-                  >
-                    {el.card_name}
-                  </Link>
+                  {addingCard === el.card_name ? (
+                    "Adding..."
+                  ) : (
+                    <Link
+                      to={`/card/${el.set_name}/${
+                        el.card_name && el.card_name.replace("/", "%2F")
+                      }`}
+                    >
+                      {el.card_name}
+                    </Link>
+                  )}
                 </td>
                 <td>
-                  <a href={el.url} target="_blank" rel="noreferrer">
+                  <a href={el.url} target='_blank' rel='noreferrer'>
                     {priceFormatter.format(el.price)}
                   </a>
                 </td>

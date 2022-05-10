@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { formatDate, priceFormatter } from "../helper/format";
-import CardTable from "./CardTable";
+import CardTable from "./dumb/CardTable";
 import { Spinner } from "reactstrap";
 import Select from "react-select";
 
