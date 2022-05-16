@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "axios": "^0.26.1",
+    "bcrypt": "^5.0.1",
     "recharts": "^2.1.9"
   }
 }

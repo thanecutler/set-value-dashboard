@@ -45,6 +45,7 @@ const CardPriceHistory = () => {
             categories: res.data.map(
               (el) => formatDate(el.time_stamp).split(",")[0]
             ),
+            tickAmount: res.data.length / 15,
           },
         });
         setSeries([{ name: "Price", data: res.data.map((el) => el.price) }]);
@@ -56,14 +57,14 @@ const CardPriceHistory = () => {
   }, [cardName, setName]);
   return (
     <div>
-      <div className='setCardTableHeader'>
-        <div className='selectColumn'>
+      <div className="setCardTableHeader">
+        <div className="selectColumn">
           <h4>{cardName}</h4>
           <h5>
             <Link to={`/charts/${setName}`}>{setName}</Link>
           </h5>
         </div>
-        <div className='selectColumn'>
+        <div className="selectColumn">
           {setList.length > 0 && (
             <Select
               placeholder={`${setName} - cards`}
@@ -81,8 +82,8 @@ const CardPriceHistory = () => {
         <Chart
           options={chartOptions}
           series={series}
-          type='line'
-          height='auto'
+          type="line"
+          height="auto"
         />
       )}
     </div>
