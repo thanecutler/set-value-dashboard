@@ -5,11 +5,11 @@ import {
   priceFormatter,
   getColor,
   calcPercentChange,
-  formatDate,
 } from "../../helper/format";
 import axios from "axios";
 
-const CardTable = ({ data, series, setSeries }) => {
+const CardTable = ({ data, series, setSeries, dataLength }) => {
+  console.log(dataLength);
   const [sortBy, setSortBy] = useState(
     window.localStorage.getItem("sortBy") || "card_name"
   );
@@ -29,13 +29,14 @@ const CardTable = ({ data, series, setSeries }) => {
       axios
         .get(`/api/card/set=${setName}/card=${cardName.replace("/", "%2F")}`)
         .then((res) => {
+          console.log(res.data.length);
           setTrackedCards(trackedCards.concat([cardName]));
           setSeries(
             series.concat([
               {
                 name: cardName,
-                data: Array(17)
-                  .fill(0)
+                data: Array(dataLength - res.data.length)
+                  .fill(null)
                   .concat(res.data.map((el) => el.price)),
               },
             ])

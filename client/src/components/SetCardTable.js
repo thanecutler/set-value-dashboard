@@ -5,6 +5,8 @@ import { formatDate, priceFormatter } from "../helper/format";
 import CardTable from "./dumb/CardTable";
 import { Spinner } from "reactstrap";
 import Select from "react-select";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
 
 const SetCardTable = () => {
   const { set, date } = useParams();
@@ -31,7 +33,6 @@ const SetCardTable = () => {
       setSetList(res.data);
     });
   }, [set, date, url]);
-
   return (
     <div>
       {loading && <Spinner>Loading...</Spinner>}
@@ -43,11 +44,11 @@ const SetCardTable = () => {
               <Link to={`/charts/${set}`}>{set}</Link>
             </h4>
           </div>
-          <div className='setCardTableHeader'>
-            <div className='selectColumn'>
+          <div className="setCardTableHeader">
+            <div className="selectColumn">
               <Select
-                className='setDataSelect'
-                placeholder='Set name'
+                className="setDataSelect"
+                placeholder="Set name"
                 options={setList.map((el) => ({
                   label: el.set_name,
                   value: el.set_name,
@@ -55,7 +56,7 @@ const SetCardTable = () => {
                 onChange={(e) => goToSet(e.value, date)}
               />
             </div>
-            <div className='selectColumn'>
+            <div className="selectColumn">
               <strong>
                 {formatDate(date)} - {data.length} cards{" "}
                 {priceFormatter.format(
@@ -63,10 +64,10 @@ const SetCardTable = () => {
                 )}
               </strong>
             </div>
-            <div className='selectColumn'>
+            <div className="selectColumn">
               <Select
-                className='setDateSelect'
-                placeholder='Card prices by date'
+                className="setDateSelect"
+                placeholder="Card prices by date"
                 options={dateList.map((el) => ({
                   label: `${formatDate(el.date)} - ${priceFormatter.format(
                     el.set_value
@@ -76,6 +77,14 @@ const SetCardTable = () => {
                 onChange={(e) => {
                   goToSet(set, e.value);
                 }}
+              />
+              <Calendar
+                calendarType="ISO 8601"
+                minDate={
+                  new Date(dateList[dateList.length - 1].date.split("T")[0])
+                }
+                maxDate={new Date()}
+                onClickDay={(value) => console.log(value)}
               />
             </div>
           </div>

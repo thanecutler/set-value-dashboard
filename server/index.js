@@ -124,10 +124,10 @@ app.get(`/api/sets/today`, (req, res) => {
     where DATE(time_stamp) = curdate()) 
     as today
     left join
-    (select set_value as prev_value, set_name
+    (select set_value as prev_value, set_name as set_name_column
     from set_data_table 
     where DATE(time_stamp) = (DATE_SUB(CURDATE(), INTERVAL 14 DAY))) as yesterday
-    on today.set_name = coalesce(yesterday.set_name, today.set_name)
+    on today.set_name = coalesce(yesterday.set_name_column, today.set_name)
     order by today.set_name
     `,
     (e, results) => {
@@ -221,14 +221,14 @@ app.get(`/api/cards/set=:set/date=:date`, (req, res) => {
 app.get(`/api/cards/set=:set/today`, (req, res) => {
   const { set } = req.params;
   const query = `select * 
-  from (select id, card_name, price, time_stamp, rarity, card_number, url from card_data_table 
+  from (select id, card_name, set_name, price, time_stamp, rarity, card_number, url from card_data_table 
   where DATE(time_stamp) = curdate() and set_name = ?) 
   as today
   left join
-  (select price as prev_value, card_name, set_name
+  (select price as prev_value, card_name as card_name_column
   from card_data_table 
   where DATE(time_stamp) = (DATE_SUB(curdate(), INTERVAL 7 DAY)) and set_name = ?) as yesterday
-  on today.card_name = yesterday.card_name
+  on today.card_name = coalesce(yesterday.card_name_column, today.card_name)
   order by today.card_name`;
 
   db.query(query, [set, set], (e, results) => {
@@ -241,14 +241,14 @@ app.get(`/api/cards/set=:set/today`, (req, res) => {
 app.get(`/api/cards/set=:set/today/price`, (req, res) => {
   const { set } = req.params;
   const query = `select * 
-  from (select id, card_name, price, time_stamp, rarity, card_number, url from card_data_table 
+  from (select id, card_name, set_name, price, time_stamp, rarity, card_number, url from card_data_table 
   where DATE(time_stamp) = curdate() and set_name = ?) 
   as today
   left join
-  (select price as prev_value, card_name, set_name
+  (select price as prev_value, card_name as card_name_column
   from card_data_table 
   where DATE(time_stamp) = (DATE_SUB(curdate(), INTERVAL 7 DAY)) and set_name = ?) as yesterday
-  on today.card_name = yesterday.card_name
+  on today.card_name = coalesce(yesterday.card_name_column, today.card_name)
   order by today.price desc`;
 
   db.query(query, [set, set], (e, results) => {
