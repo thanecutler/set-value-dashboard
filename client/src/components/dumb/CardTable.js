@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Table, Input } from "reactstrap";
+import { Table, Input, Spinner } from "reactstrap";
 import { Link } from "react-router-dom";
 import {
   priceFormatter,
@@ -7,9 +7,9 @@ import {
   calcPercentChange,
 } from "../../helper/format";
 import axios from "axios";
+import AddchartIcon from "@mui/icons-material/Addchart";
 
-const CardTable = ({ data, series, setSeries, dataLength }) => {
-  console.log(dataLength);
+const CardTable = ({ data, series, setSeries, dataLength, addToChart }) => {
   const [sortBy, setSortBy] = useState(
     window.localStorage.getItem("sortBy") || "card_name"
   );
@@ -21,7 +21,7 @@ const CardTable = ({ data, series, setSeries, dataLength }) => {
   };
   const [trackedCards, setTrackedCards] = useState([]);
   const addCardToSeries = (setName, cardName) => {
-    if (!series || trackedCards.includes(cardName)) {
+    if (!series || trackedCards.includes(cardName) || addingCard) {
       return;
     }
     if (!trackedCards.includes(cardName)) {
@@ -29,7 +29,6 @@ const CardTable = ({ data, series, setSeries, dataLength }) => {
       axios
         .get(`/api/card/set=${setName}/card=${cardName.replace("/", "%2F")}`)
         .then((res) => {
-          console.log(res.data.length);
           setTrackedCards(trackedCards.concat([cardName]));
           setSeries(
             series.concat([
@@ -57,6 +56,7 @@ const CardTable = ({ data, series, setSeries, dataLength }) => {
       <Table hover className="allSetsDataTable">
         <thead>
           <tr key="head">
+            {addToChart && <th>Add</th>}
             <th onClick={() => setLocalSortBy("card_name")}>Title</th>
             <th onClick={() => setLocalSortBy("price")}>Price</th>
             <th onClick={() => setLocalSortBy("prev_value")}>Change</th>
@@ -77,15 +77,27 @@ const CardTable = ({ data, series, setSeries, dataLength }) => {
               return b[sortBy] - a[sortBy];
             })
             .map((el) => (
-              <tr
-                key={el.id}
-                onDoubleClick={() => addCardToSeries(el.set_name, el.card_name)}
-              >
+              <tr key={el.id}>
+                {addToChart && (
+                  <td
+                    onClick={() => addCardToSeries(el.set_name, el.card_name)}
+                  >
+                    {addingCard === el.card_name ? (
+                      <Spinner size="sm" />
+                    ) : (
+                      <AddchartIcon
+                        opacity={trackedCards.includes(el.card_name) ? 1 : 0.3}
+                        style={{
+                          cursor:
+                            !trackedCards.includes(el.card_name) && "pointer",
+                        }}
+                      />
+                    )}
+                  </td>
+                )}
                 <td>
                   {addingCard === el.card_name ? (
-                    <span className="addingCardText">
-                      Adding {el.card_name}...
-                    </span>
+                    <span className="grayed">Adding {el.card_name}...</span>
                   ) : (
                     <Link
                       to={`/card/${el.set_name}/${

@@ -28,6 +28,13 @@ export const priceFormatter = new Intl.NumberFormat("en-US", {
   currency: "USD",
 });
 
+export const commaFormatter = (i) => {
+  if (i > 0) {
+    return i.toLocaleString("en-US");
+  }
+  return 0;
+};
+
 export const calcPercentChange = (curr, prev) => {
   if (curr && prev) {
     let diff = curr - prev;
@@ -43,7 +50,8 @@ export const getPerformance = (t1, t2) => {
 export const getColor = (today, yesterday) => {
   if (today > yesterday) {
     return "green";
-  } else if (today === yesterday) {
+  }
+  if (today === yesterday) {
     return "black";
   }
   return "red";

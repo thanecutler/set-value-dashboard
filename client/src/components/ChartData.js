@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 import Chart from "react-apexcharts";
+import Select from "react-select";
 import {
   Spinner,
   TabContent,
@@ -10,11 +11,13 @@ import {
   NavItem,
   NavLink,
 } from "reactstrap";
-import { formatDate, priceFormatter } from "../helper/format";
+import { commaFormatter, formatDate, priceFormatter } from "../helper/format";
 import CardTable from "./dumb/CardTable";
 import classnames from "classnames";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import DonutLargeIcon from "@mui/icons-material/DonutLarge";
 
-const ChartData = () => {
+const ChartData = ({ setList, goToSet }) => {
   const { set } = useParams();
   const [data, setData] = useState([]);
   const [activeTab, setActiveTab] = useState("1");
@@ -23,6 +26,18 @@ const ChartData = () => {
   const [chartOptions, setChartOptions] = useState({
     chart: {
       id: set,
+      animations: {
+        enabled: true,
+        easing: "easein",
+        speed: 800,
+        animateGradually: {
+          enabled: true,
+        },
+        dynamicAnimation: {
+          enabled: true,
+          speed: 350,
+        },
+      },
     },
     title: {
       text: set,
@@ -46,7 +61,6 @@ const ChartData = () => {
     setLoading(true);
     axios.get(`/api/sets/set=${set}/orderby=time_stamp/dir=asc`).then((res) => {
       setData(res.data);
-      console.log(res.data.length);
       setChartOptions({
         ...chartOptions,
         xaxis: {
@@ -55,10 +69,18 @@ const ChartData = () => {
           ),
           tickAmount: res.data.length / 15,
         },
+        yaxis: {
+          labels: {
+            formatter: function (value) {
+              return "$" + commaFormatter(value);
+            },
+          },
+        },
       });
       setSeries([
         { name: "Total set price", data: res.data.map((el) => el.set_value) },
       ]);
+      setLoading(false);
     });
     axios.get(`/api/cards/set=${set}/today`).then((res) => {
       setCardData(res.data);
@@ -75,80 +97,103 @@ const ChartData = () => {
           .map((el) => el.price)
           .slice(0, 30)
       );
-      setLoading(false);
     });
   }, [set]);
-
   return (
     <div>
-      {loading && <Spinner>Loading...</Spinner>}
-      {!loading && (
+      {loading ? (
+        <Spinner>Loading...</Spinner>
+      ) : (
         <>
-          <h3>{set}</h3>
-          <h4>
-            Price today:{" "}
-            <strong>
-              {priceFormatter.format(data[data.length - 1].set_value)}
-            </strong>
-          </h4>
-          <div className="mb-3">
-            <span className="chartLink">
-              <a href={data[0].url} target="_blank" rel="noreferrer">
-                TCGPlayer
-              </a>
-            </span>
-            <span className="chartLink">
-              <a
-                href={`https://www.ebay.com/sch/?_nkw=pokemon%20${set
-                  .toLowerCase()
-                  .replace(" ", "%20")}%20complete&_sop=16`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                eBay
-              </a>
-            </span>
-            <span className="chartLink">
-              <Link
-                to={`/cards/${set}/${
-                  data[data.length - 1].time_stamp.split("T")[0]
-                }`}
-              >
-                Price history
-              </Link>
-            </span>
+          <div className="setCardTableHeader">
+            <div className="selectColumn">
+              <h3>
+                {set}{" "}
+                <span className="grayed">
+                  ({data[data.length - 1].card_count} cards)
+                </span>
+              </h3>
+              <h4>
+                Price today:{" "}
+                <strong>
+                  {priceFormatter.format(data[data.length - 1].set_value)}
+                </strong>
+              </h4>
+              {/* <div className="mb-3">
+                <span className="chartLink">
+                  <a href={data[0].url} target="_blank" rel="noreferrer">
+                    TCGPlayer
+                  </a>
+                </span>
+                <span className="chartLink">
+                  <a
+                    href={`https://www.ebay.com/sch/?_nkw=pokemon%20${set
+                      .toLowerCase()
+                      .replace(" ", "%20")}%20complete&_sop=16`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    eBay
+                  </a>
+                </span>
+                <span className="chartLink">
+                  <Link
+                    to={`/cards/${set}/${
+                      data[data.length - 1].time_stamp.split("T")[0]
+                    }`}
+                  >
+                    Price history
+                  </Link>
+                </span>
+              </div> */}
+            </div>
+            <div className="selectColumn">
+              <Select
+                placeholder="Select a set..."
+                options={setList.map((el) => ({
+                  label: el.set_name,
+                  value: el.set_name,
+                }))}
+                onChange={(e) => {
+                  goToSet(e.value);
+                }}
+              />
+            </div>
           </div>
           <Nav tabs>
             <NavItem>
               <NavLink
                 className={classnames({ active: activeTab === "1" })}
+                style={{ cursor: "pointer" }}
                 onClick={() => {
                   toggle("1");
                 }}
               >
-                Chart data
+                <TrendingUpIcon /> Chart data
               </NavLink>
             </NavItem>
             <NavItem>
               <NavLink
                 className={classnames({ active: activeTab === "2" })}
+                style={{ cursor: "pointer" }}
                 onClick={() => {
                   toggle("2");
                 }}
               >
-                Price composition
+                <DonutLargeIcon /> Price composition
               </NavLink>
             </NavItem>
           </Nav>
           <TabContent activeTab={activeTab}>
             <TabPane tabId="1">
-              <Chart options={chartOptions} series={series} height="auto" />
+              <Chart options={chartOptions} series={series} height="600px" />
               <div className="tableContainer">
                 <CardTable
                   data={cardData}
                   series={series}
                   setSeries={setSeries}
                   dataLength={data.length}
+                  addToChart
                 />
               </div>
             </TabPane>

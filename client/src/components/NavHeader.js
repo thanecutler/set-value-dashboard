@@ -2,12 +2,14 @@ import React from "react";
 import { Nav, Navbar, NavbarBrand, NavItem, NavLink } from "reactstrap";
 import SearchSets from "./SearchSets";
 import { Link } from "react-router-dom";
+import AutoGraphIcon from "@mui/icons-material/AutoGraph";
+
 const NavHeader = ({ username }) => {
   return (
-    <Navbar color='dark' dark expand='md' fixed='top'>
-      <Nav className='me-auto' navbar>
-        <NavbarBrand tag={Link} to='/'>
-          Set Price Tracker
+    <Navbar color="dark" dark expand="md" fixed="top">
+      <Nav className="me-auto" navbar>
+        <NavbarBrand tag={Link} to="/">
+          <AutoGraphIcon /> Set Price Tracker
         </NavbarBrand>
         <NavItem>
           <SearchSets />
@@ -15,17 +17,17 @@ const NavHeader = ({ username }) => {
       </Nav>
       <Nav navbar>
         <NavItem>
-          <NavLink tag={Link} to='/stats'>
+          <NavLink tag={Link} to="/stats">
             Stats
           </NavLink>
         </NavItem>
         <NavItem>
           {username ? (
-            <NavLink tag={Link} to='/'>
+            <NavLink tag={Link} to="/">
               {username}
             </NavLink>
           ) : (
-            <NavLink tag={Link} to='/login'>
+            <NavLink tag={Link} to="/login">
               Log in
             </NavLink>
           )}

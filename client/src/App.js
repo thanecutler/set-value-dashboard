@@ -1,9 +1,9 @@
 import "./App.css";
 import { Outlet, Routes, Route } from "react-router-dom";
-import AllSets from "./components/AllSets";
 import NavHeader from "./components/NavHeader";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Home from "./components/Home";
 
 function App() {
   axios.defaults.withCredentials = true;
@@ -16,20 +16,12 @@ function App() {
     });
   }, []);
   return (
-    <div className='app'>
+    <div className="app">
       <NavHeader username={username} />
-      <div className='spacer'></div>
+      <div className="spacer"></div>
       <main>
         <Routes>
-          <Route
-            path='/'
-            element={
-              <>
-                <h2>Set Price Tracker</h2>
-                <AllSets />
-              </>
-            }
-          />
+          <Route path="/" element={<Home />} />
         </Routes>
         <Outlet />
       </main>

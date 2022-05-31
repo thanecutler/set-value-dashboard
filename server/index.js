@@ -109,7 +109,9 @@ app.get(`/api/databasestats`, (req, res) => {
   (select count(*) from set_data_table
   ) as set_row_count,
   (select max(time_stamp) from card_data_table
-  ) as time_completed`,
+  ) as time_completed,
+  (select count(distinct date(time_stamp)) from set_data_table)
+  as day_count`,
     (e, results) => {
       res.json(results);
     }
@@ -275,13 +277,8 @@ app.get(`/api/cards/search/name=:searchTerm`, (req, res) => {
   const { searchTerm } = req.params;
 
   db.query(
-    `select * from card_data_table 
-    where date(time_stamp) = curdate() 
-    and card_name like ? or date(time_stamp) = curdate() 
-    and card_name like ? or date(time_stamp) = curdate() 
-    and card_name like ? 
-    order by card_name;`,
-    [`${searchTerm} %`, `${searchTerm}`, `% ${searchTerm} %`],
+    `select * from card_data_table where card_name like ? and date(time_stamp) = curdate()`,
+    [`%${searchTerm}%`],
     (e, results) => {
       if (e) {
         throw e;

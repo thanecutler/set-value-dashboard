@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Spinner, Table } from "reactstrap";
+import { commaFormatter } from "../helper/format";
 
 const Stats = () => {
   const [data, setData] = useState([]);
@@ -15,18 +16,22 @@ const Stats = () => {
     <Spinner />
   ) : (
     <Table>
-      <thead>
-        <tr>
-          <th>Card data table row count</th>
-          <th>Set data table row count</th>
-          <th>Last scan completed</th>
-        </tr>
-      </thead>
       <tbody>
         <tr>
-          <td>{data.card_row_count}</td>
-          <td>{data.set_row_count}</td>
+          <td>Card row count</td>
+          <td>{commaFormatter(data.card_row_count)}</td>
+        </tr>
+        <tr>
+          <td>Set row count</td>
+          <td>{commaFormatter(data.set_row_count)}</td>
+        </tr>
+        <tr>
+          <td>Last scan completed</td>
           <td>{data.time_completed}</td>
+        </tr>
+        <tr>
+          <td>Days tracked</td>
+          <td>{data.day_count}</td>
         </tr>
       </tbody>
     </Table>

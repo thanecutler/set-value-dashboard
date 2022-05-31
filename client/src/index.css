@@ -81,6 +81,8 @@ main {
 }
 
 .selectColumn {
+  top: 0;
+  height: 100%;
   width: 100%;
   justify-content: center;
   /* align-items: center; */
@@ -94,7 +96,7 @@ main {
   padding-right: 10px;
 }
 
-.addingCardText {
+.grayed {
   color: gray;
-  opacity: 0.7;
+  opacity: 0.8;
 }
