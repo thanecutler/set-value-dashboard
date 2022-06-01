@@ -8,12 +8,22 @@ import {
 } from "../../helper/format";
 import axios from "axios";
 import AddchartIcon from "@mui/icons-material/Addchart";
+import PaginationContainer from "./PaginationContainer";
 
-const CardTable = ({ data, series, setSeries, dataLength, addToChart }) => {
+const CardTable = ({
+  data,
+  series,
+  setSeries,
+  dataLength,
+  addToChart,
+  pageSize = 10,
+}) => {
   const [sortBy, setSortBy] = useState(
     window.localStorage.getItem("sortBy") || "card_name"
   );
   const [filterBy, setFilterBy] = useState("");
+  const [currentPage, setCurrentPage] = useState(0);
+  const pageCount = Math.ceil(data.length / pageSize);
   const [addingCard, setAddingCard] = useState("");
   const setLocalSortBy = (sortBy) => {
     window.localStorage.setItem("sortBy", sortBy);
@@ -21,7 +31,7 @@ const CardTable = ({ data, series, setSeries, dataLength, addToChart }) => {
   };
   const [trackedCards, setTrackedCards] = useState([]);
   const addCardToSeries = (setName, cardName) => {
-    if (!series || trackedCards.includes(cardName) || addingCard) {
+    if (!series || trackedCards.includes(cardName) || addingCard !== "") {
       return;
     }
     if (!trackedCards.includes(cardName)) {
@@ -56,7 +66,7 @@ const CardTable = ({ data, series, setSeries, dataLength, addToChart }) => {
       <Table hover className="allSetsDataTable">
         <thead>
           <tr key="head">
-            {addToChart && <th>Add</th>}
+            {addToChart && <th></th>}
             <th onClick={() => setLocalSortBy("card_name")}>Title</th>
             <th onClick={() => setLocalSortBy("price")}>Price</th>
             <th onClick={() => setLocalSortBy("prev_value")}>Change</th>
@@ -73,6 +83,7 @@ const CardTable = ({ data, series, setSeries, dataLength, addToChart }) => {
                 .toLowerCase()
                 .includes(filterBy.toLowerCase());
             })
+            .slice(currentPage * pageSize, (currentPage + 1) * pageSize)
             .sort((a, b) => {
               return b[sortBy] - a[sortBy];
             })
@@ -90,6 +101,7 @@ const CardTable = ({ data, series, setSeries, dataLength, addToChart }) => {
                         style={{
                           cursor:
                             !trackedCards.includes(el.card_name) && "pointer",
+                          zIndex: -1,
                         }}
                       />
                     )}
@@ -145,6 +157,11 @@ const CardTable = ({ data, series, setSeries, dataLength, addToChart }) => {
             ))}
         </tbody>
       </Table>
+      <PaginationContainer
+        pageCount={pageCount}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+      />
     </div>
   );
 };

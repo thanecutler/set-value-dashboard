@@ -3,35 +3,44 @@ import axios from "axios";
 import { Input, Table, Spinner } from "reactstrap";
 import { priceFormatter, calcPercentChange, getColor } from "../helper/format";
 import { Link } from "react-router-dom";
+import PaginationContainer from "./dumb/PaginationContainer";
 
 const AllSets = () => {
   const [loading, setLoading] = useState(true);
   const [dataList, setDataList] = useState([]);
   const [filterBy, setFilterBy] = useState("");
   const [sortBy, setSortBy] = useState("set_name");
+  const [currentPage, setCurrentPage] = useState(0);
   useEffect(() => {
     axios.get("/api/sets/today").then((res) => {
       setLoading(false);
       setDataList(res.data);
     });
   }, []);
-
+  const pageSize = 30;
+  const pageCount = Math.ceil(dataList.length / pageSize);
   return (
     <div>
       <h3>All sets {!loading && `(${dataList.length})`}</h3>
       {loading && <Spinner>Loading...</Spinner>}
       {dataList.length > 0 && (
         <div>
-          <div className='setFilterContainer'>
+          <PaginationContainer
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            pageCount={pageCount}
+            allSets
+          />
+          <div className="setFilterContainer">
             <Input
-              placeholder='Filter'
+              placeholder="Filter"
               onChange={(e) => {
                 setFilterBy(e.target.value);
               }}
-              spellCheck='false'
+              spellCheck="false"
             />
           </div>
-          <Table hover className='allSetsDataTable'>
+          <Table hover className="allSetsDataTable">
             <thead>
               <tr>
                 <th onClick={() => setSortBy("set_name")}>Set name</th>
@@ -89,6 +98,7 @@ const AllSets = () => {
                 .sort((a, b) => {
                   return b[sortBy] - a[sortBy];
                 })
+                .slice(currentPage * pageSize, (currentPage + 1) * pageSize)
                 .map((el) => (
                   <tr key={el.uuid}>
                     <td>
@@ -110,7 +120,7 @@ const AllSets = () => {
                       </span>
                     </td>
                     <td>
-                      <a href={el.url} target='_blank' rel='noreferrer'>
+                      <a href={el.url} target="_blank" rel="noreferrer">
                         {el.card_count}
                       </a>
                     </td>

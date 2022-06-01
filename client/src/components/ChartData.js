@@ -119,7 +119,7 @@ const ChartData = ({ setList, goToSet }) => {
                   {priceFormatter.format(data[data.length - 1].set_value)}
                 </strong>
               </h4>
-              {/* <div className="mb-3">
+              <div className="mb-3">
                 <span className="chartLink">
                   <a href={data[0].url} target="_blank" rel="noreferrer">
                     TCGPlayer
@@ -145,13 +145,13 @@ const ChartData = ({ setList, goToSet }) => {
                     Price history
                   </Link>
                 </span>
-              </div> */}
+              </div>
             </div>
             <div className="selectColumn">
               <Select
                 placeholder="Select a set..."
                 options={setList.map((el) => ({
-                  label: el.set_name,
+                  label: `${el.set_name}`,
                   value: el.set_name,
                 }))}
                 onChange={(e) => {
