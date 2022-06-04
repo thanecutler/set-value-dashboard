@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Input, Table, Spinner } from "reactstrap";
-import { priceFormatter, calcPercentChange, getColor } from "../helper/format";
+import {
+  priceFormatter,
+  calcPercentChange,
+  getColor,
+} from "../../helper/format";
 import { Link } from "react-router-dom";
-import PaginationContainer from "./dumb/PaginationContainer";
+import PaginationContainer from "../dumb/PaginationContainer";
 
 const AllSets = () => {
   const [loading, setLoading] = useState(true);
@@ -36,6 +40,7 @@ const AllSets = () => {
               placeholder="Filter"
               onChange={(e) => {
                 setFilterBy(e.target.value);
+                setCurrentPage(0);
               }}
               spellCheck="false"
             />

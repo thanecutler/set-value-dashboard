@@ -4,6 +4,7 @@ import { CardBody, Card, CardTitle, CardSubtitle, Button } from "reactstrap";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import HistoryIcon from "@mui/icons-material/History";
 import TimelineIcon from "@mui/icons-material/Timeline";
+import ThermostatIcon from "@mui/icons-material/Thermostat";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ const Home = () => {
     {
       icon: <HistoryIcon />,
       title: "Price history",
-      subtitle: "See full set price data snapshots by day",
+      subtitle: "See detailed, complete set price snapshots by day",
       link: "/pricehistory",
     },
     {
@@ -30,16 +31,24 @@ const Home = () => {
       link: "/comparetrends",
       disabled: true,
     },
+    {
+      icon: <ThermostatIcon />,
+      title: "Forecasting",
+      subtitle:
+        "Analyze past data to estimate future performance - coming soon",
+      link: "/forecasting",
+      disabled: true,
+    },
   ];
   return (
     <div>
-      <h5>Welcome to the Set Price Tracker!</h5>
+      <h5>Welcome to Pokemon Data Explorer!</h5>
       <div className="mb-3">
         This site maintains historical information about Pokemon card market
         prices. Data is available as far back as March 6th, 2022 for total set
-        prices and March 23rd, 2022 for individual card prices. Some prices may
-        be incorrect due to multiple factors, such as errors during collection
-        or inaccurate calculation.
+        prices and March 23rd, 2022 for individual card prices. Note that some
+        prices may be incorrect due to multiple factors, such as errors during
+        collection or inaccurate calculation.
       </div>
       <div className="mb-3">
         Use the tools below to start exploring the data.
@@ -53,7 +62,11 @@ const Home = () => {
             <CardSubtitle className="mb-2 text-muted" tag="h6">
               {el.subtitle}
             </CardSubtitle>
-            <Button onClick={() => goToLink(el.link)} disabled={el.disabled}>
+            <Button
+              color="primary"
+              onClick={() => goToLink(el.link)}
+              disabled={el.disabled}
+            >
               View
             </Button>
           </CardBody>

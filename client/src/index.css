@@ -16,14 +16,19 @@ code {
     monospace;
 }
 
-nav {
-  padding-left: 5%;
-  padding-right: 5%;
+.mainNav {
+  padding-left: 4%;
+  padding-right: 4%;
+}
+.footNav {
+  padding-left: 4%;
+  padding-right: 4%;
 }
 
 main {
   padding-left: 5%;
   padding-right: 5%;
+  height: 100%;
 }
 
 .spacer {
@@ -49,8 +54,12 @@ main {
   top: 56px;
   border-bottom: 1px solid black;
   background-color: white;
-  cursor: pointer;
   z-index: 1;
+  table-layout: fixed;
+}
+
+.clickable {
+  cursor: pointer;
 }
 
 .submitSearch {

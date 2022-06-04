@@ -23,15 +23,17 @@ const ChartData = ({ setList, goToSet }) => {
   const [activeTab, setActiveTab] = useState("1");
   const [cardData, setCardData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [cardTableLoading, setCardTableLoading] = useState(true);
   const [chartOptions, setChartOptions] = useState({
     chart: {
       id: set,
       animations: {
         enabled: true,
-        easing: "easein",
+        easing: "linear",
         speed: 800,
         animateGradually: {
           enabled: true,
+          delay: 1,
         },
         dynamicAnimation: {
           enabled: true,
@@ -59,6 +61,7 @@ const ChartData = ({ setList, goToSet }) => {
   };
   useEffect(() => {
     setLoading(true);
+    setCardTableLoading(true);
     axios.get(`/api/sets/set=${set}/orderby=time_stamp/dir=asc`).then((res) => {
       setData(res.data);
       setChartOptions({
@@ -67,7 +70,7 @@ const ChartData = ({ setList, goToSet }) => {
           categories: res.data.map(
             (el) => formatDate(el.time_stamp).split(",")[0]
           ),
-          tickAmount: res.data.length / 15,
+          tickAmount: res.data.length / 15 + 1,
         },
         yaxis: {
           labels: {
@@ -84,6 +87,7 @@ const ChartData = ({ setList, goToSet }) => {
     });
     axios.get(`/api/cards/set=${set}/today`).then((res) => {
       setCardData(res.data);
+      setCardTableLoading(false);
       setDonutOptions({
         ...donutOptions,
         labels: res.data
@@ -138,7 +142,7 @@ const ChartData = ({ setList, goToSet }) => {
                 </span>
                 <span className="chartLink">
                   <Link
-                    to={`/cards/${set}/${
+                    to={`/pricehistory/${set}/${
                       data[data.length - 1].time_stamp.split("T")[0]
                     }`}
                   >
@@ -188,13 +192,19 @@ const ChartData = ({ setList, goToSet }) => {
             <TabPane tabId="1">
               <Chart options={chartOptions} series={series} height="600px" />
               <div className="tableContainer">
-                <CardTable
-                  data={cardData}
-                  series={series}
-                  setSeries={setSeries}
-                  dataLength={data.length}
-                  addToChart
-                />
+                {cardTableLoading ? (
+                  <>
+                    <Spinner /> Loading card data...
+                  </>
+                ) : (
+                  <CardTable
+                    data={cardData}
+                    series={series}
+                    setSeries={setSeries}
+                    dataLength={data.length}
+                    addToChart
+                  />
+                )}
               </div>
             </TabPane>
             <TabPane tabId="2">

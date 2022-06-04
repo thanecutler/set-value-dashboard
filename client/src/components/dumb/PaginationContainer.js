@@ -1,12 +1,7 @@
 import React from "react";
 import { Pagination, PaginationLink, PaginationItem } from "reactstrap";
 
-const PaginationContainer = ({
-  pageCount,
-  setCurrentPage,
-  currentPage,
-  allSets,
-}) => {
+const PaginationContainer = ({ pageCount, setCurrentPage, currentPage }) => {
   const handleClick = (page) => {
     setCurrentPage(page);
   };
