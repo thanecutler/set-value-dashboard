@@ -30,11 +30,13 @@ const CardTable = ({
   const handleSortBy = (sortBy) => {
     if (window.localStorage.getItem("sortBy") === sortBy) {
       setAscending(!ascending);
+      window.localStorage.setItem("ascending", !ascending);
       return;
     }
     setCurrentPage(0);
     window.localStorage.setItem("sortBy", sortBy);
     setAscending(true);
+    window.localStorage.setItem("ascending", ascending);
     setSortBy(sortBy);
   };
   const [trackedCards, setTrackedCards] = useState([]);
@@ -62,7 +64,9 @@ const CardTable = ({
         });
     }
   };
-  const [ascending, setAscending] = useState(true);
+  const [ascending, setAscending] = useState(
+    localStorage.getItem("ascending") || true
+  );
   const handleSort = (a, b) => {
     if (ascending) {
       return a[sortBy] > b[sortBy] ? 1 : b[sortBy] > a[sortBy] ? -1 : 0;

@@ -8,6 +8,7 @@ const path = require("path");
 const bcrypt = require("bcrypt");
 const session = require("express-session");
 const saltRounds = config.saltRounds;
+const helper = require("./helper/helper");
 
 app.use(express.json());
 app.use(cors());
@@ -133,7 +134,16 @@ app.get(`/api/sets/today`, (req, res) => {
     order by today.set_name
     `,
     (e, results) => {
-      res.json(results);
+      res.json(
+        results.map((set) => ({
+          ...set,
+          price_change: (set.prev_value - set.set_value).toFixed(2),
+          percent_change: helper.calcPercentChange(
+            set.set_value,
+            set.prev_value
+          ),
+        }))
+      );
     }
   );
 });

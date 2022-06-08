@@ -38,7 +38,7 @@ export const commaFormatter = (i) => {
 export const calcPercentChange = (curr, prev) => {
   if (curr && prev) {
     let diff = curr - prev;
-    return ((diff / curr) * 100).toFixed(2);
+    return ((diff / prev) * 100).toFixed(2);
   }
   return 0;
 };
