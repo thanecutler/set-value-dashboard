@@ -18,11 +18,11 @@ const Stats = () => {
     <Table>
       <tbody>
         <tr>
-          <td>Card row count</td>
+          <td>Card price data points</td>
           <td>{commaFormatter(data.card_row_count)}</td>
         </tr>
         <tr>
-          <td>Set row count</td>
+          <td>Set price data points</td>
           <td>{commaFormatter(data.set_row_count)}</td>
         </tr>
         <tr>

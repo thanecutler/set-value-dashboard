@@ -178,10 +178,10 @@ app.get(`/api/sets/set=:set/orderby=:orderby/dir=:direction`, (req, res) => {
   );
 });
 
-app.get(`/api/sets/dates/set=:set`, (req, res) => {
+app.get(`/api/sets/daterange/set=:set`, (req, res) => {
   const { set } = req.params;
   db.query(
-    `select distinct(date(time_stamp)) as 'date', set_value from set_data_table where set_name = ? order by date desc`,
+    `select distinct date(time_stamp) as 'date', set_value from set_data_table where set_name = ? and date(time_stamp) > "2022-03-23" order by date desc`,
     [set],
     (e, results) => {
       res.json(results);
@@ -287,13 +287,30 @@ app.get(`/api/cards/search/name=:searchTerm`, (req, res) => {
   const { searchTerm } = req.params;
 
   db.query(
-    `select * from card_data_table where card_name like ? and date(time_stamp) = curdate()`,
-    [`%${searchTerm}%`],
+    `select * 
+    from (select id, card_name, set_name, price, time_stamp, rarity, card_number, url from card_data_table 
+    where DATE(time_stamp) = curdate() and card_name like ?) 
+    as today
+    left join
+    (select price as prev_value, card_name as prev_card_name, set_name as prev_set_name
+    from card_data_table 
+    where DATE(time_stamp) = (DATE_SUB(curdate(), INTERVAL 7 DAY)) and card_name like ?) as yesterday
+    on today.card_name = coalesce(yesterday.prev_card_name, today.card_name)
+    and 
+    today.set_name = yesterday.prev_set_name
+    order by today.price desc`,
+    [`%${searchTerm}%`, `%${searchTerm}%`],
     (e, results) => {
       if (e) {
         throw e;
       }
-      res.json(results);
+      res.json(
+        results.map((card) => ({
+          ...card,
+          price_change: parseInt((card.price - card.prev_value).toFixed(2)),
+          percent_change: helper.calcPercentChange(card.price, card.prev_value),
+        }))
+      );
     }
   );
 });

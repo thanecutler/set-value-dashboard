@@ -76,9 +76,9 @@ const CardTable = ({
   const showArrow = (columnName) => {
     if (sortBy === columnName) {
       if (ascending) {
-        return <ArrowDropDown />;
+        return <ArrowDropUp />;
       }
-      return <ArrowDropUp />;
+      return <ArrowDropDown />;
     }
   };
   return (

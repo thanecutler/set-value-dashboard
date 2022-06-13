@@ -14,6 +14,7 @@ import CardPriceHistory from "./components/PriceHistory/CardPriceHistory";
 import Stats from "./components/Stats";
 import Login from "./components/Login";
 import SignUp from "./components/SignUp";
+import PriceHistory from "./components/PriceHistory/PriceHistory";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -24,9 +25,8 @@ ReactDOM.render(
           <Route path="/signup" element={<SignUp />} />
           <Route path="/charts/*" element={<ChartSelector />} />
           <Route path="/allsets" element={<AllSets />} />
-          <Route path="/pricehistory">
-            <Route path=":set/:date" element={<SetCardTable />} />
-          </Route>
+          <Route path="/pricehistory" element={<PriceHistory />} />
+          <Route path="/pricehistory/:set/:date" element={<SetCardTable />} />
           <Route path="/stats" element={<Stats />} />
           <Route path="/psa" element={<PSATable />} />
           <Route path="/psa/add" element={<AddPSA />} />

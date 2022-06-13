@@ -78,14 +78,6 @@ const SetCardTable = () => {
                   goToSet(set, e.value);
                 }}
               />
-              <Calendar
-                calendarType="ISO 8601"
-                minDate={
-                  new Date(dateList[dateList.length - 1].date.split("T")[0])
-                }
-                maxDate={new Date()}
-                onClickDay={(value) => console.log(value)}
-              />
             </div>
           </div>
           <CardTable data={data} setData={setData} />
