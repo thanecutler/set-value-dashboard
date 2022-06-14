@@ -26,7 +26,7 @@ const SetCardTable = () => {
       setData(res.data);
       setLoading(false);
     });
-    axios.get(`/api/sets/dates/set=${set}`).then((res) => {
+    axios.get(`/api/sets/daterange/set=${set}`).then((res) => {
       setDateList(res.data);
     });
     axios.get(`/api/sets/list`).then((res) => {

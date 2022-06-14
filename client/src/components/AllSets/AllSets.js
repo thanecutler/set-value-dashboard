@@ -68,19 +68,34 @@ const AllSets = () => {
           <Table hover className="allSetsDataTable">
             <thead>
               <tr>
-                <th onClick={() => handleSortBy("set_name")}>
+                <th
+                  className="clickable"
+                  onClick={() => handleSortBy("set_name")}
+                >
                   Set name {showArrow("set_name")}{" "}
                 </th>
-                <th onClick={() => handleSortBy("set_value")}>
+                <th
+                  className="clickable"
+                  onClick={() => handleSortBy("set_value")}
+                >
                   Today {showArrow("set_value")}
                 </th>
-                <th onClick={() => handleSortBy("prev_value")}>
+                <th
+                  className="clickable"
+                  onClick={() => handleSortBy("prev_value")}
+                >
                   14 day prev {showArrow("prev_value")}{" "}
                 </th>
-                <th onClick={() => handleSortBy("percent_change")}>
+                <th
+                  className="clickable"
+                  onClick={() => handleSortBy("percent_change")}
+                >
                   Change {showArrow("percent_change")}
                 </th>
-                <th onClick={() => handleSortBy("card_count")}>
+                <th
+                  className="clickable"
+                  onClick={() => handleSortBy("card_count")}
+                >
                   Card count {showArrow("card_count")}
                 </th>
               </tr>
@@ -173,6 +188,12 @@ const AllSets = () => {
                 ))}
             </tbody>
           </Table>
+          <PaginationContainer
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            pageCount={pageCount}
+            allSets
+          />
         </div>
       )}
     </div>

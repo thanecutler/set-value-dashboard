@@ -60,7 +60,8 @@ main {
 }
 
 .clickable {
-  cursor: pointer;
+  user-select: none;
+  cursor: pointer !important;
 }
 
 .submitSearch {

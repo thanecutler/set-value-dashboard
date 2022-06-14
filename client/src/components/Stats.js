@@ -33,6 +33,10 @@ const Stats = () => {
           <td>Days tracked</td>
           <td>{data.day_count}</td>
         </tr>
+        <tr>
+          <td>Database size</td>
+          <td>{data.size}MB</td>
+        </tr>
       </tbody>
     </Table>
   );

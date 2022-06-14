@@ -112,7 +112,10 @@ app.get(`/api/databasestats`, (req, res) => {
   (select max(time_stamp) from card_data_table
   ) as time_completed,
   (select count(distinct date(time_stamp)) from set_data_table)
-  as day_count`,
+  as day_count,
+  (select round(sum(data_length + index_length) / 1024 / 1024, 1) 
+  from information_schema.tables
+  where table_schema = "set_data_schema") as size`,
     (e, results) => {
       res.json(results);
     }
