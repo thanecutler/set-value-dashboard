@@ -24,7 +24,6 @@ code {
 .footNav {
   padding-left: 4%;
   padding-right: 4%;
-  position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
@@ -34,7 +33,7 @@ code {
 main {
   padding-left: 5%;
   padding-right: 5%;
-  height: 100%;
+  min-height: 100%;
   padding-bottom: 60px;
 }
 
