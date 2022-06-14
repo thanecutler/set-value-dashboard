@@ -26,7 +26,7 @@ const SetCardTable = () => {
       setData(res.data);
       setLoading(false);
     });
-    axios.get(`/api/sets/dates/set=${set}`).then((res) => {
+    axios.get(`/api/sets/daterange/set=${set}`).then((res) => {
       setDateList(res.data);
     });
     axios.get(`/api/sets/list`).then((res) => {
@@ -77,14 +77,6 @@ const SetCardTable = () => {
                 onChange={(e) => {
                   goToSet(set, e.value);
                 }}
-              />
-              <Calendar
-                calendarType="ISO 8601"
-                minDate={
-                  new Date(dateList[dateList.length - 1].date.split("T")[0])
-                }
-                maxDate={new Date()}
-                onClickDay={(value) => console.log(value)}
               />
             </div>
           </div>
