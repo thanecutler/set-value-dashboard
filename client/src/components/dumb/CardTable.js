@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Table, Input, Spinner } from "reactstrap";
+import { Table, Spinner } from "reactstrap";
 import { Link } from "react-router-dom";
 import {
   priceFormatter,
@@ -23,7 +23,7 @@ const CardTable = ({
   const [sortBy, setSortBy] = useState(
     window.localStorage.getItem("sortBy") || "card_name"
   );
-  const [filterBy, setFilterBy] = useState("");
+  const [filterBy] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const pageCount = Math.ceil(data.length / pageSize);
   const [addingCard, setAddingCard] = useState("");

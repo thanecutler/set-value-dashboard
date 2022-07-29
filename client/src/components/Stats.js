@@ -35,7 +35,7 @@ const Stats = () => {
         </tr>
         <tr>
           <td>Database size</td>
-          <td>{data.size}MB</td>
+          <td>{data.size} MB</td>
         </tr>
       </tbody>
     </Table>

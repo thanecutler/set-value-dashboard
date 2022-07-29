@@ -20,7 +20,7 @@ function App() {
     <div className="app">
       <NavHeader username={username} />
       <div className="spacer"></div>
-      <main>
+      <main className="mainContent">
         <Routes>
           <Route path="/" element={<Home />} />
         </Routes>

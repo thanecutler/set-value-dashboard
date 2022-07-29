@@ -1,10 +1,10 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { formatDate } from "../../helper/format";
+import { formatDate, priceFormatter } from "../../helper/format";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Chart from "react-apexcharts";
 import Select from "react-select";
-import { Spinner } from "reactstrap";
+import { Spinner, Table, Container } from "reactstrap";
 
 const CardPriceHistory = () => {
   const { cardName, setName } = useParams();
@@ -73,18 +73,52 @@ const CardPriceHistory = () => {
                 value: el.card_name,
               }))}
               onChange={(e) => goToCard(e.value)}
+              menuPortalTarget={document.body}
+              styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
             />
           )}
         </div>
       </div>
       {loading && <Spinner>Loading...</Spinner>}
       {!loading && (
-        <Chart
-          options={chartOptions}
-          series={series}
-          type="line"
-          height="auto"
-        />
+        <>
+          <Container>
+            <Table>
+              <tbody>
+                <tr>
+                  <td>Current</td>
+                  <td>{priceFormatter.format(data[data.length - 1].price)}</td>
+                </tr>
+                <tr>
+                  <td>High</td>
+                  <td>
+                    {priceFormatter.format(
+                      Math.max(...data.map((el) => el.price))
+                    )}
+                  </td>
+                </tr>
+                <tr>
+                  <td>Low</td>
+                  <td>
+                    {priceFormatter.format(
+                      Math.min.apply(
+                        null,
+                        data.map((el) => el.price).filter(Boolean)
+                      )
+                    )}
+                  </td>
+                </tr>
+              </tbody>
+            </Table>
+          </Container>
+
+          <Chart
+            options={chartOptions}
+            series={series}
+            type="line"
+            height="auto"
+          />
+        </>
       )}
     </div>
   );

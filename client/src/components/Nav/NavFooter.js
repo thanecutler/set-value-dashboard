@@ -1,6 +1,5 @@
 import React from "react";
-import { Navbar, Nav, NavbarText, NavItem, NavbarBrand } from "reactstrap";
-import GitHubPNG from "../../static/GitHub-Mark/PNG/GitHub-Mark-Light-32px.png";
+import { Navbar, Nav, NavbarText } from "reactstrap";
 
 const NavFooter = () => {
   return (

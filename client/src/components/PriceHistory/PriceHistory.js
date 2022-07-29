@@ -25,13 +25,14 @@ const PriceHistory = () => {
   };
 
   const handleSelectDate = (date) => {
-    const formattedDate = JSON.stringify(date).split("T")[0].replace(/\"/g, "");
+    const formattedDate = JSON.stringify(date).split("T")[0].replace(/"/g, "");
 
     setCurrentDate(formattedDate);
   };
   const handleSubmit = () => {
     navigate(`/pricehistory/${currentSet}/${currentDate}`);
   };
+
   return (
     <div>
       <h5>Price History</h5>
@@ -52,6 +53,9 @@ const PriceHistory = () => {
           minDate={new Date(dateRange[dateRange.length - 1].split("T")[0])}
           maxDate={new Date()}
           onClickDay={(value) => handleSelectDate(value)}
+          tileContent={({ activeStartDate, date, view }) =>
+            console.log(activeStartDate, date, view)
+          }
         />
       )}
       <Button

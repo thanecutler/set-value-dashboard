@@ -161,6 +161,8 @@ const ChartData = ({ setList, goToSet }) => {
                 onChange={(e) => {
                   goToSet(e.value);
                 }}
+                menuPortalTarget={document.body}
+                styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
               />
             </div>
           </div>

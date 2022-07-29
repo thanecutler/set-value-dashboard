@@ -18,6 +18,7 @@ const SetCardTable = () => {
 
   const goToSet = (set, date) => {
     navigate(`/pricehistory/${set}/${date}`);
+    console.log("sent");
   };
 
   useEffect(() => {
@@ -32,11 +33,10 @@ const SetCardTable = () => {
       setSetList(res.data);
     });
   }, [set, date, url]);
-
   return (
     <div>
       {loading && <Spinner>Loading...</Spinner>}
-      {date <= "2022-03-22" && "Card data not available before Mar 23, 2022"}
+      {date < "2022-03-22" && "Card data not available before Mar 23, 2022"}
       {data.length > 0 && (
         <>
           <div>
@@ -60,8 +60,6 @@ const SetCardTable = () => {
                   value: el.set_name,
                 }))}
                 onChange={(e) => goToSet(e.value, date)}
-                menuPortalTarget={document.body}
-                styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
               />
             </div>
             <div className="selectColumn"></div>
@@ -78,20 +76,11 @@ const SetCardTable = () => {
                 onChange={(e) => {
                   goToSet(set, e.value);
                 }}
-                menuPortalTarget={document.body}
-                styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
               />
             </div>
           </div>
           <CardTable data={data} setData={setData} />
         </>
-      )}
-      {data.length === 0 && !loading && (
-        <div>
-          No results
-          <br />
-          <Link to="/pricehistory">Try again</Link>
-        </div>
       )}
     </div>
   );

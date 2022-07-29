@@ -28,8 +28,7 @@ const Home = () => {
       icon: <TimelineIcon />,
       title: "Trend comparison",
       subtitle: "Compare card price trends on a blank chart - coming soon",
-      link: "/comparetrends",
-      disabled: true,
+      link: "/trendcomparison",
     },
     {
       icon: <ThermostatIcon />,
@@ -53,8 +52,8 @@ const Home = () => {
       <div className="mb-3">
         Use the tools below to start exploring the data.
       </div>
-      {tools.map((el) => (
-        <Card className="mb-2">
+      {tools.map((el, ind) => (
+        <Card className="mb-2" key={ind}>
           <CardBody>
             <CardTitle tag="h5">
               {el.icon} {el.title}
