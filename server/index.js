@@ -176,7 +176,11 @@ app.get(`/api/sets/set=:set/orderby=:orderby/dir=:direction`, (req, res) => {
       if (e) {
         throw e;
       }
-      res.json(results);
+      let sum = 0;
+      results.forEach((el) => (sum += el.set_value));
+      let avg = sum / results.length;
+      let filtered = results.filter((el) => el.set_value >= avg - avg * 0.3);
+      res.json(filtered);
     }
   );
 });
@@ -184,7 +188,7 @@ app.get(`/api/sets/set=:set/orderby=:orderby/dir=:direction`, (req, res) => {
 app.get(`/api/sets/daterange/set=:set`, (req, res) => {
   const { set } = req.params;
   db.query(
-    `select distinct date(time_stamp) as 'date', set_value from set_data_table where set_name = ? and date(time_stamp) > "2022-03-23" order by date desc`,
+    `select distinct date(time_stamp) as 'date', set_value from set_data_table where set_name = ? and date(time_stamp) > "2022-03-23" order by date asc`,
     [set],
     (e, results) => {
       res.json(results);
@@ -314,6 +318,24 @@ app.get(`/api/cards/search/name=:searchTerm`, (req, res) => {
           percent_change: helper.calcPercentChange(card.price, card.prev_value),
         }))
       );
+    }
+  );
+});
+
+app.get("/api/cards/search/timeseries/name=:searchTerm", (req, res) => {
+  const { searchTerm } = req.params;
+  db.query(
+    `select 
+    date(time_stamp) as date, round(sum(price), 2) as total, count(card_name) as card_count
+    from card_data_table 
+    where card_name like ? 
+    group by date`,
+    [`%${searchTerm}%`],
+    (e, results) => {
+      if (e) {
+        throw e;
+      }
+      res.json(results);
     }
   );
 });
