@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,4 +5,60 @@ generator client {
 datasource db {
   provider = "mysql"
   url      = "mysql://python:!QAZ@WSX1qaz2wsx@192.168.1.218:3306/set_data_schema"
+}
+
+model card_data_table {
+  id          Int       @id @default(autoincrement())
+  card_name   String?   @db.VarChar(255)
+  set_name    String?   @db.VarChar(255)
+  price       Float?    @db.Float
+  rarity      String?   @db.VarChar(255)
+  card_number String?   @db.VarChar(45)
+  url         String?   @db.VarChar(255)
+  time_stamp  DateTime? @default(dbgenerated("(curdate())")) @db.Date
+
+  @@index([card_name], map: "card_name_index")
+  @@index([time_stamp], map: "time_stamp_index")
+  @@index([card_name, time_stamp], map: "card_name_time_stamp_index")
+  @@index([set_name], map: "set_name_index")
+  @@index([set_name, time_stamp], map: "set_name_time_stamp_index")
+}
+
+model checklist {
+  id        Int     @id @default(autoincrement())
+  card_name String? @db.VarChar(255)
+  set_name  String? @db.VarChar(255)
+}
+
+model psa_cards {
+  id          Int     @id @default(autoincrement())
+  card_name   String? @db.VarChar(255)
+  set_name    String? @db.VarChar(255)
+  card_number String? @db.VarChar(45)
+  card_grade  Int?
+}
+
+model set_data_table {
+  uuid       String    @id @db.VarChar(45)
+  set_name   String?   @db.VarChar(100)
+  set_value  Float?    @db.Float
+  url        String?   @db.VarChar(150)
+  card_count Int?
+  time_stamp DateTime? @default(dbgenerated("(curdate())")) @db.Date
+
+  @@index([set_name, time_stamp], map: "set_name_timestamp")
+}
+
+model set_info {
+  id           Int     @id @default(autoincrement())
+  set_name     String  @db.VarChar(255)
+  release_date Int?
+  block        String? @db.VarChar(255)
+}
+
+model users {
+  id       Int    @id @default(autoincrement())
+  username String @db.VarChar(45)
+  password String @db.VarChar(255)
+  email    String @db.VarChar(255)
 }

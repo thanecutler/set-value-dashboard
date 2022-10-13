@@ -56,3 +56,17 @@ export const getColor = (today, yesterday) => {
   }
   return "red";
 };
+
+export const calculateAveragePercentChange = (arr, lastNumDays) => {
+  let percentages = [];
+  let startIndex = lastNumDays ? arr.length - lastNumDays : 0;
+  for (let i = startIndex; i < arr.length; i++) {
+    let curr = arr[i];
+    let next = arr[i + 1];
+    if (i + 1 < arr.length) {
+      let percentage = (next - curr) / curr;
+      percentages.push(percentage);
+    }
+  }
+  return percentages.reduce((sum, a) => sum + a, 0).toFixed(2) * 100;
+};

@@ -92,24 +92,39 @@ const CardTable = ({
         <thead>
           <tr key="head">
             {addToChart && <th>Add</th>}
-            <th className="clickable" onClick={() => handleSortBy("card_name")}>
+            <th
+              className="clickable "
+              onClick={() => handleSortBy("card_name")}
+            >
               Title {showArrow("card_name")}
             </th>
-            <th className="clickable" onClick={() => handleSortBy("price")}>
+            <th
+              className="clickable text-end"
+              onClick={() => handleSortBy("price")}
+            >
               Price {showArrow("price")}
             </th>
-            <th>Change</th>
+            <th className="text-end">Change</th>
             <th
-              className="clickable"
+              className="clickable text-end"
               onClick={() => handleSortBy("prev_value")}
             >
               Week {showArrow("prev_value")}
             </th>
-            <th className="clickable" onClick={() => handleSortBy("set_name")}>
+            <th
+              className="clickable text-end"
+              onClick={() => handleSortBy("rarity")}
+            >
+              Rarity {showArrow("rarity")}
+            </th>
+            <th
+              className="clickable text-end"
+              onClick={() => handleSortBy("set_name")}
+            >
               Set {showArrow("set_name")}
             </th>
             <th
-              className="clickable"
+              className="clickable text-end"
               onClick={() => handleSortBy("card_number")}
             >
               # {showArrow("card_number")}
@@ -159,13 +174,13 @@ const CardTable = ({
                     </Link>
                   )}
                 </td>
-                <td>
+                <td className="text-end">
                   <a href={el.url} target="_blank" rel="noreferrer">
                     {priceFormatter.format(el.price)}
                   </a>
                 </td>
                 {el.prev_value ? (
-                  <td>
+                  <td className="text-end">
                     <span
                       style={{
                         color: getColor(el.price, el.prev_value),
@@ -179,11 +194,14 @@ const CardTable = ({
                   <td></td>
                 )}
                 {el.prev_value ? (
-                  <td>{priceFormatter.format(el.prev_value)}</td>
+                  <td className="text-end">
+                    {priceFormatter.format(el.prev_value)}
+                  </td>
                 ) : (
                   <td></td>
                 )}
-                <td>
+                <td className="text-end">{el.rarity}</td>
+                <td className="text-end">
                   <Link
                     to={`/pricehistory/${el.set_name}/${
                       el.time_stamp.split("T")[0]
@@ -192,7 +210,7 @@ const CardTable = ({
                     {el.set_name}
                   </Link>
                 </td>
-                <td>{el.card_number}</td>
+                <td className="text-end">{el.card_number}</td>
                 {/* <td>{el.rarity}</td> */}
               </tr>
             ))}

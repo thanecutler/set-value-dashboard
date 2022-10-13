@@ -75,25 +75,25 @@ const AllSets = () => {
                   Set name {showArrow("set_name")}{" "}
                 </th>
                 <th
-                  className="clickable"
+                  className="clickable text-end"
                   onClick={() => handleSortBy("set_value")}
                 >
                   Today {showArrow("set_value")}
                 </th>
                 <th
-                  className="clickable"
+                  className="clickable text-end"
                   onClick={() => handleSortBy("prev_value")}
                 >
                   14 day prev {showArrow("prev_value")}{" "}
                 </th>
                 <th
-                  className="clickable"
+                  className="clickable text-end"
                   onClick={() => handleSortBy("percent_change")}
                 >
                   Change {showArrow("percent_change")}
                 </th>
                 <th
-                  className="clickable"
+                  className="clickable text-end"
                   onClick={() => handleSortBy("card_count")}
                 >
                   Card count {showArrow("card_count")}
@@ -103,7 +103,7 @@ const AllSets = () => {
             <tbody>
               <tr>
                 <td>Total</td>
-                <td>
+                <td className="text-end">
                   {priceFormatter.format(
                     dataList
                       .filter((el) => {
@@ -115,7 +115,7 @@ const AllSets = () => {
                       .reduce((prev, curr) => prev + curr, 0)
                   )}
                 </td>
-                <td>
+                <td className="text-end">
                   {priceFormatter.format(
                     dataList
                       .filter((el) => {
@@ -128,7 +128,7 @@ const AllSets = () => {
                   )}
                 </td>
                 <td></td>
-                <td>
+                <td className="text-end">
                   {dataList
                     .filter((el) => {
                       return (el.set_name || el.url)
@@ -167,9 +167,13 @@ const AllSets = () => {
                         {el.set_name || el.url}
                       </Link>
                     </td>
-                    <td>{priceFormatter.format(el.set_value)}</td>
-                    <td>{priceFormatter.format(el.prev_value)}</td>
-                    <td>
+                    <td className="text-end">
+                      {priceFormatter.format(el.set_value)}
+                    </td>
+                    <td className="text-end">
+                      {priceFormatter.format(el.prev_value)}
+                    </td>
+                    <td className="text-end">
                       <span
                         style={{
                           color: getColor(el.set_value, el.prev_value),
@@ -179,7 +183,7 @@ const AllSets = () => {
                         {el.percent_change}%
                       </span>
                     </td>
-                    <td>
+                    <td className="text-end">
                       <a href={el.url} target="_blank" rel="noreferrer">
                         {el.card_count}
                       </a>

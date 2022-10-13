@@ -10,6 +10,8 @@ const session = require("express-session");
 const saltRounds = config.saltRounds;
 const helper = require("./helper/helper");
 
+const sets = require("./routes/sets");
+
 app.use(express.json());
 app.use(cors());
 app.use(
@@ -18,6 +20,7 @@ app.use(
   })
 );
 
+app.use("/api/sets", sets);
 app.use(
   session({
     key: "username",
@@ -103,9 +106,11 @@ app.get(`/api/login`, (req, res) => {
 });
 
 app.get(`/api/databasestats`, (req, res) => {
+  // this should be a service
+  // log database stats every night after scan
   db.query(
     `select 
-  (select count(*) from card_data_table
+  (select max(id) from card_data_table
   ) as card_row_count,
   (select count(*) from set_data_table
   ) as set_row_count,
@@ -116,89 +121,6 @@ app.get(`/api/databasestats`, (req, res) => {
   (select round(sum(data_length + index_length) / 1024 / 1024, 1) 
   from information_schema.tables
   where table_schema = "set_data_schema") as size`,
-    (e, results) => {
-      res.json(results);
-    }
-  );
-});
-
-app.get(`/api/sets/today`, (req, res) => {
-  console.log(req.headers);
-  db.query(
-    `select * 
-    from (select * from set_data_table 
-    where DATE(time_stamp) = curdate()) 
-    as today
-    left join
-    (select set_value as prev_value, set_name as set_name_column
-    from set_data_table 
-    where DATE(time_stamp) = (DATE_SUB(CURDATE(), INTERVAL 14 DAY))) as yesterday
-    on today.set_name = coalesce(yesterday.set_name_column, today.set_name)
-    order by today.set_name
-    `,
-    (e, results) => {
-      res.json(
-        results.map((set) => ({
-          ...set,
-          price_change: (set.prev_value - set.set_value).toFixed(2),
-          percent_change: helper.calcPercentChange(
-            set.set_value,
-            set.prev_value
-          ),
-        }))
-      );
-    }
-  );
-});
-
-app.get(`/api/sets/set=:set`, (req, res) => {
-  const { set } = req.params;
-
-  db.query(
-    `SELECT * FROM set_data_table WHERE set_name = ? order by time_stamp asc;`,
-    set,
-    (e, results) => {
-      if (e) {
-        res.send(e);
-        throw e;
-      }
-      res.json(results);
-    }
-  );
-});
-
-app.get(`/api/sets/set=:set/orderby=:orderby/dir=:direction`, (req, res) => {
-  const { set, orderby, direction } = req.params;
-  db.query(
-    `SELECT * FROM set_data_table WHERE set_name = ? ORDER BY time_stamp asc`,
-    [set, orderby, direction],
-    (e, results) => {
-      if (e) {
-        throw e;
-      }
-      let sum = 0;
-      results.forEach((el) => (sum += el.set_value));
-      let avg = sum / results.length;
-      let filtered = results.filter((el) => el.set_value >= avg - avg * 0.3);
-      res.json(filtered);
-    }
-  );
-});
-
-app.get(`/api/sets/daterange/set=:set`, (req, res) => {
-  const { set } = req.params;
-  db.query(
-    `select distinct date(time_stamp) as 'date', set_value from set_data_table where set_name = ? and date(time_stamp) > "2022-03-23" order by date asc`,
-    [set],
-    (e, results) => {
-      res.json(results);
-    }
-  );
-});
-
-app.get(`/api/sets/list`, (req, res) => {
-  db.query(
-    `select distinct(set_name) from set_data_table order by set_name asc`,
     (e, results) => {
       res.json(results);
     }
@@ -220,7 +142,7 @@ app.get(`/api/cards/set=:set/date=:date`, (req, res) => {
   const { set, date } = req.params;
   const query = `select * 
   from (select card_name, set_name, price, time_stamp, rarity, card_number, url from card_data_table 
-  where DATE(time_stamp) = ? and set_name = ?) 
+  where time_stamp = ? and set_name = ?) 
   as today
   order by today.card_name`;
   // left join
@@ -241,12 +163,12 @@ app.get(`/api/cards/set=:set/today`, (req, res) => {
   const { set } = req.params;
   const query = `select * 
   from (select id, card_name, set_name, price, time_stamp, rarity, card_number, url from card_data_table 
-  where DATE(time_stamp) = curdate() and set_name = ?) 
+  where time_stamp = curdate() and set_name = ?) 
   as today
   left join
   (select price as prev_value, card_name as card_name_column
   from card_data_table 
-  where DATE(time_stamp) = (DATE_SUB(curdate(), INTERVAL 7 DAY)) and set_name = ?) as yesterday
+  where time_stamp = (DATE_SUB(curdate(), INTERVAL 7 DAY)) and set_name = ?) as yesterday
   on today.card_name = coalesce(yesterday.card_name_column, today.card_name)
   order by today.card_name`;
 
@@ -296,12 +218,12 @@ app.get(`/api/cards/search/name=:searchTerm`, (req, res) => {
   db.query(
     `select * 
     from (select id, card_name, set_name, price, time_stamp, rarity, card_number, url from card_data_table 
-    where DATE(time_stamp) = curdate() and card_name like ?) 
+    where time_stamp = curdate() and card_name like ?) 
     as today
     left join
     (select price as prev_value, card_name as prev_card_name, set_name as prev_set_name
     from card_data_table 
-    where DATE(time_stamp) = (DATE_SUB(curdate(), INTERVAL 7 DAY)) and card_name like ?) as yesterday
+    where time_stamp = (DATE_SUB(curdate(), INTERVAL 7 DAY)) and card_name like ?) as yesterday
     on today.card_name = coalesce(yesterday.prev_card_name, today.card_name)
     and 
     today.set_name = yesterday.prev_set_name
@@ -338,81 +260,6 @@ app.get("/api/cards/search/timeseries/name=:searchTerm", (req, res) => {
       res.json(results);
     }
   );
-});
-
-// check
-
-app.post(`/api/check`, (req, res) => {
-  const { card_name, set_name } = req.body;
-  const sql = `insert into checklist (card_name, set_name) values (?, ?)`;
-  const values = [card_name, set_name];
-
-  db.query(sql, values, (e, results) => {
-    if (e) {
-      throw e;
-    }
-  });
-  db.query(
-    `select A.*, 
-    CASE WHEN B.card_name IS NOT NULL
-    THEN true
-    ELSE false
-    END
-    as 'is_owned'
-    from card_data_table A
-    left join checklist B
-    on A.card_name = B.card_name
-    and A.set_name = B.set_name
-    where A.set_name = ?
-    and date(A.time_stamp) = curdate()`,
-    set_name,
-    (e, results) => {
-      if (e) {
-        throw e;
-      }
-      res.json(results);
-    }
-  );
-});
-
-// psa
-
-app.post("/api/psa/add", (req, res) => {
-  const { card_name, set_name, card_number, card_grade } = req.body;
-  const sql =
-    "INSERT INTO psa_cards (card_name, set_name, card_number, card_grade) VALUES (?, ?, ?, ?);";
-  const vals = [card_name, set_name, card_number, card_grade];
-  db.query(sql, vals, (e, results) => {
-    if (e) {
-      throw e;
-    }
-  });
-  db.query("SELECT * FROM psa_cards", (e, results) => {
-    if (e) {
-      throw e;
-    }
-    res.send(results);
-  });
-});
-
-app.get("/api/psa/all", (req, res) => {
-  db.query("SELECT * FROM psa_cards", (e, results) => {
-    if (e) {
-      throw e;
-    }
-    res.send(results);
-  });
-});
-
-app.delete("/api/psa/remove", (req, res) => {
-  const { id } = req.body;
-  const sql = "DELETE FROM psa_cards WHERE id = ?";
-  db.query(sql, [id], (e, results) => {
-    if (e) {
-      throw e;
-    }
-    res.send(results);
-  });
 });
 
 if (process.env.NODE_ENV === "production") {

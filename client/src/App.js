@@ -26,7 +26,6 @@ function App() {
         </Routes>
         <Outlet />
       </main>
-      <NavFooter />
     </div>
   );
 }

@@ -1,5 +1,15 @@
 import React from "react";
-import { Nav, Navbar, NavbarBrand, NavItem, NavLink } from "reactstrap";
+import {
+  Nav,
+  Navbar,
+  NavbarBrand,
+  NavItem,
+  NavLink,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownItem,
+  DropdownMenu,
+} from "reactstrap";
 import SearchSets from "../SearchSets";
 import { Link } from "react-router-dom";
 import AutoGraphIcon from "@mui/icons-material/AutoGraph";
@@ -12,15 +22,21 @@ const NavHeader = ({ username }) => {
           <AutoGraphIcon /> Pokemon Data Explorer
         </NavbarBrand>
         <NavItem>
-          <SearchSets />
-        </NavItem>
-      </Nav>
-      <Nav navbar>
-        <NavItem>
-          <NavLink tag={Link} to="/stats">
-            Stats
+          <NavLink tag={Link} to="/allsets">
+            Sets
           </NavLink>
         </NavItem>
+        <UncontrolledDropdown nav inNavbar>
+          <DropdownToggle nav caret>
+            Admin
+          </DropdownToggle>
+          <DropdownMenu right>
+            <DropdownItem>
+              <Link to="/stats">Stats</Link>
+            </DropdownItem>
+            <DropdownItem>Logs</DropdownItem>
+          </DropdownMenu>
+        </UncontrolledDropdown>
         <NavItem>
           {username ? (
             <NavLink tag={Link} to="/">
@@ -31,6 +47,11 @@ const NavHeader = ({ username }) => {
               Log in
             </NavLink>
           )}
+        </NavItem>
+      </Nav>
+      <Nav navbar>
+        <NavItem>
+          <SearchSets />
         </NavItem>
       </Nav>
       {/* <NavbarText>Current market value: $</NavbarText> */}

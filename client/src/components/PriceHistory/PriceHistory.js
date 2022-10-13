@@ -7,10 +7,12 @@ import { useNavigate } from "react-router-dom";
 
 const PriceHistory = () => {
   const [setList, setSetList] = useState([]);
-  const [dateRange, setDateRange] = useState([]);
+  const [selectedSetData, setSelectedSetData] = useState([]);
+  const [minDate, setMinDate] = useState();
   const [currentSet, setCurrentSet] = useState("");
   const [currentDate, setCurrentDate] = useState();
   const navigate = useNavigate();
+
   useEffect(() => {
     axios.get(`/api/sets/list`).then((res) => {
       setSetList(res.data);
@@ -19,9 +21,12 @@ const PriceHistory = () => {
 
   const handleSelectSet = (set) => {
     setCurrentSet(set);
-    axios
-      .get(`/api/sets/daterange/set=${set}`)
-      .then((res) => setDateRange(res.data.map((el) => el.date)));
+    axios.get(`/api/sets/daterange/set=${set}`).then((res) => {
+      setSelectedSetData(
+        res.data.map((el) => ({ ...el, date: new Date(el.date) }))
+      );
+      setMinDate(new Date(res.data[0].date));
+    });
   };
 
   const handleSelectDate = (date) => {
@@ -31,6 +36,16 @@ const PriceHistory = () => {
   };
   const handleSubmit = () => {
     navigate(`/pricehistory/${currentSet}/${currentDate}`);
+  };
+
+  const getDayPrice = (inputDate) => {
+    console.log();
+    const index = selectedSetData
+      .map((el) => el.date.getTime())
+      .indexOf(inputDate.getTime());
+    if (index >= 0) {
+      return `$${selectedSetData[index].set_value}`;
+    }
   };
 
   return (
@@ -46,16 +61,20 @@ const PriceHistory = () => {
         onChange={(e) => handleSelectSet(e.value)}
         className="mb-3"
       />
-      {dateRange.length > 0 && (
+      {selectedSetData.length > 0 && (
         <Calendar
+          style={{ width: "100%" }}
           className="mb-3"
           calendarType="ISO 8601"
-          minDate={new Date(dateRange[dateRange.length - 1].split("T")[0])}
+          minDate={minDate}
           maxDate={new Date()}
           onClickDay={(value) => handleSelectDate(value)}
-          tileContent={({ activeStartDate, date, view }) =>
-            console.log(activeStartDate, date, view)
-          }
+          tileContent={({ activeStartDate, date, view }) => (
+            <span className="grayed">
+              <br />
+              {getDayPrice(date)}
+            </span>
+          )}
         />
       )}
       <Button
@@ -65,6 +84,7 @@ const PriceHistory = () => {
       >
         Submit
       </Button>
+      {setList.map((el) => el.set_value)}
     </div>
   );
 };

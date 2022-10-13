@@ -1,6 +1,10 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { formatDate, priceFormatter } from "../../helper/format";
+import {
+  calculateAveragePercentChange,
+  formatDate,
+  priceFormatter,
+} from "../../helper/format";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Chart from "react-apexcharts";
 import Select from "react-select";
@@ -82,36 +86,24 @@ const CardPriceHistory = () => {
       {loading && <Spinner>Loading...</Spinner>}
       {!loading && (
         <>
-          <Container>
-            <Table>
-              <tbody>
-                <tr>
-                  <td>Current</td>
-                  <td>{priceFormatter.format(data[data.length - 1].price)}</td>
-                </tr>
-                <tr>
-                  <td>High</td>
-                  <td>
-                    {priceFormatter.format(
-                      Math.max(...data.map((el) => el.price))
-                    )}
-                  </td>
-                </tr>
-                <tr>
-                  <td>Low</td>
-                  <td>
-                    {priceFormatter.format(
-                      Math.min.apply(
-                        null,
-                        data.map((el) => el.price).filter(Boolean)
-                      )
-                    )}
-                  </td>
-                </tr>
-              </tbody>
-            </Table>
-          </Container>
-
+          <div>
+            Current:{" "}
+            <strong>
+              {priceFormatter.format(data[data.length - 1].price)}
+            </strong>
+          </div>
+          <div>
+            High:{" "}
+            {priceFormatter.format(Math.max(...data.map((el) => el.price)))}
+            <br />
+            Low:{" "}
+            {priceFormatter.format(
+              Math.min.apply(null, data.map((el) => el.price).filter(Boolean))
+            )}
+            <br />
+            Average change:{" "}
+            {calculateAveragePercentChange(data.map((el) => el.price))}%
+          </div>
           <Chart
             options={chartOptions}
             series={series}

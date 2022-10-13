@@ -2,25 +2,15 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 import Chart from "react-apexcharts";
-import Select from "react-select";
-import {
-  Spinner,
-  TabContent,
-  TabPane,
-  Nav,
-  NavItem,
-  NavLink,
-} from "reactstrap";
+import { Spinner, TabContent, TabPane } from "reactstrap";
 import { commaFormatter, formatDate, priceFormatter } from "../helper/format";
 import CardTable from "./dumb/CardTable";
-import classnames from "classnames";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import DonutLargeIcon from "@mui/icons-material/DonutLarge";
+import SetSidebar from "./Nav/SetSidebar";
 
 const ChartData = ({ setList, goToSet }) => {
   const { set } = useParams();
   const [data, setData] = useState([]);
-  const [activeTab, setActiveTab] = useState("1");
+  const [activeTab, setActiveTab] = useState("chartData");
   const [cardData, setCardData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [cardTableLoading, setCardTableLoading] = useState(true);
@@ -34,10 +24,6 @@ const ChartData = ({ setList, goToSet }) => {
         animateGradually: {
           enabled: true,
           delay: 1,
-        },
-        dynamicAnimation: {
-          enabled: true,
-          speed: 350,
         },
       },
     },
@@ -53,16 +39,10 @@ const ChartData = ({ setList, goToSet }) => {
     },
   });
   const [donutSeries, setDonutSeries] = useState([]);
-
-  const toggle = (tab) => {
-    if (activeTab !== tab) {
-      setActiveTab(tab);
-    }
-  };
   useEffect(() => {
     setLoading(true);
     setCardTableLoading(true);
-    axios.get(`/api/sets/set=${set}/orderby=time_stamp/dir=asc`).then((res) => {
+    axios.get(`/api/sets/set=${set}`).then((res) => {
       setData(res.data);
       setChartOptions({
         ...chartOptions,
@@ -79,147 +59,126 @@ const ChartData = ({ setList, goToSet }) => {
             },
           },
         },
+        title: {
+          text: set,
+        },
       });
       setSeries([
         { name: "Total set price", data: res.data.map((el) => el.set_value) },
+        {
+          name: "Secret rares",
+          data: res.data.map((el) => el.secret_rare_total),
+        },
+        {
+          name: "Ultra rares",
+          data: res.data.map((el) => el.ultra_rare_total),
+        },
+        {
+          name: "C, UC, R, Holo",
+          data: res.data.map((el) => el.other_cards_total),
+        },
       ]);
       setLoading(false);
     });
     axios.get(`/api/cards/set=${set}/today`).then((res) => {
+      res.data.sort((a, b) => (a.price < b.price ? 1 : -1));
+      let remainingCardsTotal = 0;
+      let remainingCards = res.data
+        .slice(21, res.data.length)
+        .map((el) => el.price);
+      let remainingCardsObj = {
+        card_name: "Remaining cards",
+        price: remainingCards.reduce((a, b) => a + b, remainingCardsTotal),
+      };
       setCardData(res.data);
       setCardTableLoading(false);
       setDonutOptions({
         ...donutOptions,
         labels: res.data
-          .sort((a, b) => (a.price < b.price ? 1 : -1))
           .map((el) => `${el.card_name} - ${priceFormatter.format(el.price)}`)
-          .slice(0, 30),
+          .slice(0, 20),
       });
-      setDonutSeries(
-        res.data
-          .sort((a, b) => (a.price < b.price ? 1 : -1))
-          .map((el) => el.price)
-          .slice(0, 30)
-      );
+      setDonutSeries(res.data.map((el) => el.price).slice(0, 20));
     });
   }, [set]);
   return (
     <div>
-      {loading ? (
-        <Spinner>Loading...</Spinner>
-      ) : (
-        <>
-          <div className="setCardTableHeader">
-            <div className="selectColumn">
-              <h3>
-                {set}{" "}
-                <span className="grayed">
-                  ({data[data.length - 1].card_count} cards)
-                </span>
-              </h3>
-              <h4>
-                Price today:{" "}
-                <strong>
-                  {priceFormatter.format(data[data.length - 1].set_value)}
-                </strong>
-              </h4>
-              <div className="mb-3">
-                <span className="chartLink">
-                  <a href={data[0].url} target="_blank" rel="noreferrer">
-                    TCGPlayer
-                  </a>
-                </span>
-                <span className="chartLink">
-                  <a
-                    href={`https://www.ebay.com/sch/?_nkw=pokemon%20${set
-                      .toLowerCase()
-                      .replace(" ", "%20")}%20complete&_sop=16`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    eBay
-                  </a>
-                </span>
-                <span className="chartLink">
+      <SetSidebar
+        setName={set}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        data={data}
+        setList={setList}
+        goToSet={goToSet}
+      />
+      <div className="setMainContent">
+        {loading ? (
+          <Spinner>Loading...</Spinner>
+        ) : (
+          <>
+            <div className="setCardTableHeader">
+              <div className="selectColumn">
+                <h3>
+                  {set}{" "}
+                  <span className="grayed">
+                    ({data[data.length - 1].card_count} cards)
+                  </span>
+                </h3>
+              </div>
+              <div className="selectColumn">
+                <div>
                   <Link
                     to={`/pricehistory/${set}/${
-                      data[data.length - 1].time_stamp.split("T")[0]
+                      data[0].time_stamp.split("T")[0]
                     }`}
+                    className="grayed"
                   >
-                    Price history
+                    Data available from {formatDate(data[0].time_stamp)}
                   </Link>
-                </span>
+                </div>
               </div>
             </div>
-            <div className="selectColumn">
-              <Select
-                placeholder="Select a set..."
-                options={setList.map((el) => ({
-                  label: `${el.set_name}`,
-                  value: el.set_name,
-                }))}
-                onChange={(e) => {
-                  goToSet(e.value);
-                }}
-                menuPortalTarget={document.body}
-                styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
-              />
-            </div>
-          </div>
-          <Nav tabs>
-            <NavItem>
-              <NavLink
-                className={classnames({ active: activeTab === "1" })}
-                style={{ cursor: "pointer" }}
-                onClick={() => {
-                  toggle("1");
-                }}
-              >
-                <TrendingUpIcon /> Chart data
-              </NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink
-                className={classnames({ active: activeTab === "2" })}
-                style={{ cursor: "pointer" }}
-                onClick={() => {
-                  toggle("2");
-                }}
-              >
-                <DonutLargeIcon /> Price composition
-              </NavLink>
-            </NavItem>
-          </Nav>
-          <TabContent activeTab={activeTab}>
-            <TabPane tabId="1">
-              <Chart options={chartOptions} series={series} height="600px" />
-              <div className="tableContainer">
-                {cardTableLoading ? (
-                  <>
-                    <Spinner /> Loading card data...
-                  </>
-                ) : (
-                  <CardTable
-                    data={cardData}
-                    series={series}
-                    setSeries={setSeries}
-                    dataLength={data.length}
-                    addToChart
-                  />
-                )}
-              </div>
-            </TabPane>
-            <TabPane tabId="2">
-              <Chart
-                options={donutOptions}
-                series={donutSeries}
-                type="donut"
-                height="600px"
-              />
-            </TabPane>
-          </TabContent>
-        </>
-      )}
+            <TabContent activeTab={activeTab}>
+              <TabPane tabId="chartData">
+                <div>
+                  Cost of Secret Rares:{" "}
+                  {priceFormatter.format(
+                    data[data.length - 1].secret_rare_total
+                  )}
+                </div>
+                <div>
+                  Cost of Ultra Rares:{" "}
+                  {priceFormatter.format(
+                    data[data.length - 1].ultra_rare_total
+                  )}
+                </div>
+                <div>
+                  Cost of remaining cards: $
+                  {data[data.length - 1].other_cards_total}
+                </div>
+                <Chart options={chartOptions} series={series} height="600px" />
+              </TabPane>
+              <TabPane tabId="cardList">
+                <CardTable
+                  data={cardData}
+                  series={series}
+                  setSeries={setSeries}
+                  dataLength={data.length}
+                  addToChart
+                />
+              </TabPane>
+              <TabPane tabId="priceComposition">
+                <Chart
+                  options={donutOptions}
+                  series={donutSeries}
+                  type="donut"
+                  height="600px"
+                />
+              </TabPane>
+            </TabContent>
+          </>
+        )}
+      </div>
     </div>
   );
 };
