@@ -65,7 +65,7 @@ const CardTable = ({
     }
   };
   const [ascending, setAscending] = useState(
-    localStorage.getItem("ascending") || true
+    localStorage.getItem("ascending") === "true" ? true : false || true
   );
   const handleSort = (a, b) => {
     if (ascending) {

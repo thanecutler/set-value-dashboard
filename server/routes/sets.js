@@ -6,42 +6,28 @@ const prisma = new PrismaClient();
 
 app.get("/set=:setName", async (req, res) => {
   const { setName } = req.params;
-
   try {
-    const results =
-      await prisma.$queryRaw`select set_name, set_value, card_count, url, ultra_rare_total, secret_rare_total, other_cards_total, time_stamp from 
-    (select round(sum(price), 2) as "full_set_total", time_stamp as f_time_stamp
-    from card_data_table 
-    where set_name = ${setName} 
-    group by time_stamp) as f
-    left join
-    (select * 
-    from set_data_table 
-    where set_name = ${setName})
-    as t
-    on f.f_time_stamp = t.time_stamp
-    left join
-    (select round(sum(price), 2) as "ultra_rare_total", time_stamp as u_time_stamp
-    from card_data_table 
-    where set_name = ${setName} 
-    and rarity = "Ultra Rare" 
-    group by time_stamp) as u
-    on f.f_time_stamp = u.u_time_stamp
-    left join 
-    (select round(sum(price), 2) as "secret_rare_total", time_stamp as s_time_stamp
-    from card_data_table 
-    where set_name = ${setName} 
-    and rarity = "Secret Rare" 
-    group by time_stamp) as s
-    on f.f_time_stamp = s.s_time_stamp
-    left join
-    (select round(sum(price), 2) as "other_cards_total", time_stamp as o_time_stamp
-    from card_data_table 
-    where set_name = ${setName} 
-    and (rarity = "Common" or rarity = "Uncommon" or rarity = "Rare" or rarity = "Holo Rare")
-    group by time_stamp) as o
-    on f.f_time_stamp = o_time_stamp`;
+    const results = await prisma.set_data_table.findMany({
+      where: { set_name: setName },
+    });
     res.status(200).json(results);
+  } catch (e) {
+    res.status(400).send({ msg: e });
+  }
+});
+app.get("/set=:setName/rarity=:rarity", async (req, res) => {
+  const { setName, rarity } = req.params;
+  try {
+    const results = await prisma.card_data_table.groupBy({
+      by: ["time_stamp"],
+      where: { set_name: setName, rarity },
+      _sum: { price: true },
+    });
+    res.status(200).json(
+      results.map((el) => {
+        return { total: el._sum.price.toFixed(2), time_stamp: el.time_stamp };
+      })
+    );
   } catch (e) {
     res.status(400).send({ msg: e });
   }

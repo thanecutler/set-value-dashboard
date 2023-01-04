@@ -9,13 +9,6 @@ import NavFooter from "./components/Nav/NavFooter";
 function App() {
   axios.defaults.withCredentials = true;
   const [username, setUsername] = useState("");
-  useEffect(() => {
-    axios.get(`/api/login`).then((res) => {
-      if (res.data.username) {
-        setUsername(res.data.username);
-      }
-    });
-  }, []);
   return (
     <div className="app">
       <NavHeader username={username} />

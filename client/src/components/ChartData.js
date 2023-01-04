@@ -8,7 +8,7 @@ import CardTable from "./dumb/CardTable";
 import SetSidebar from "./Nav/SetSidebar";
 
 const ChartData = ({ setList, goToSet }) => {
-  const { set } = useParams();
+  const { set, sortDirection } = useParams();
   const [data, setData] = useState([]);
   const [activeTab, setActiveTab] = useState("chartData");
   const [cardData, setCardData] = useState([]);
@@ -65,18 +65,6 @@ const ChartData = ({ setList, goToSet }) => {
       });
       setSeries([
         { name: "Total set price", data: res.data.map((el) => el.set_value) },
-        {
-          name: "Secret rares",
-          data: res.data.map((el) => el.secret_rare_total),
-        },
-        {
-          name: "Ultra rares",
-          data: res.data.map((el) => el.ultra_rare_total),
-        },
-        {
-          name: "C, UC, R, Holo",
-          data: res.data.map((el) => el.other_cards_total),
-        },
       ]);
       setLoading(false);
     });
