@@ -6,8 +6,8 @@ const axios = require("axios");
 const ChartSelector = () => {
   const [setList, setSetList] = useState([]);
   const navigate = useNavigate();
-  const goToSet = (set) => {
-    navigate(`/charts/${set}`);
+  const goToSet = (set, date) => {
+    navigate(`/charts/${set}/${date}`);
   };
 
   useEffect(() => {
@@ -17,10 +17,10 @@ const ChartSelector = () => {
   }, []);
 
   return (
-    <div className='chartContainer'>
+    <div className="chartContainer">
       <Routes>
         <Route
-          path='/:set/:date'
+          path="/:set/:date"
           element={
             <>
               <ChartData setList={setList} goToSet={goToSet} />

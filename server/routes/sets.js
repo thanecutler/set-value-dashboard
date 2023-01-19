@@ -12,15 +12,18 @@ const todayDate = new Date(`${yyyy}-${mm}-${dd}`);
 
 app.get("/set=:setName", async (req, res) => {
   const { setName } = req.params;
+  console.log("received");
   try {
     const results = await prisma.set_data_table.findMany({
-      where: { set_name: setName, deleted: 0 },
+      where: { set_name: setName, deleted: { lt: 1 } },
     });
     res.status(200).json(results);
   } catch (e) {
+    console.error(e);
     res.status(400).send({ msg: e });
   }
 });
+
 app.get("/set=:setName/rarity=:rarity", async (req, res) => {
   const { setName, rarity } = req.params;
   try {

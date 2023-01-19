@@ -4,7 +4,6 @@ import NavHeader from "./components/Nav/NavHeader";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Home from "./components/Home";
-import NavFooter from "./components/Nav/NavFooter";
 
 function App() {
   axios.defaults.withCredentials = true;
