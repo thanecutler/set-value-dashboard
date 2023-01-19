@@ -3,12 +3,18 @@ const app = express.Router();
 const { PrismaClient } = require("@prisma/client");
 const { calcPercentChange } = require("../helper/helper");
 const prisma = new PrismaClient();
+var today = new Date();
+var dd = String(today.getDate()).padStart(2, "0");
+var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
+var yyyy = today.getFullYear();
+
+const todayDate = new Date(`${yyyy}-${mm}-${dd}`);
 
 app.get("/set=:setName", async (req, res) => {
   const { setName } = req.params;
   try {
     const results = await prisma.set_data_table.findMany({
-      where: { set_name: setName },
+      where: { set_name: setName, deleted: 0 },
     });
     res.status(200).json(results);
   } catch (e) {
@@ -36,13 +42,13 @@ app.get("/set=:setName/rarity=:rarity", async (req, res) => {
 app.get("/today", async (req, res) => {
   try {
     const results = await prisma.$queryRaw`
-        select * 
-        from (select * from set_data_table 
-        where time_stamp = curdate()) 
+        select *
+        from (select * from set_data_table
+        where time_stamp = curdate())
         as today
         left join
         (select set_value as prev_value, set_name as set_name_column
-        from set_data_table 
+        from set_data_table
         where time_stamp = (DATE_SUB(CURDATE(), INTERVAL 14 DAY))) as yesterday
         on today.set_name = coalesce(yesterday.set_name_column, today.set_name)
         order by today.set_name
@@ -69,10 +75,16 @@ app.get(`/daterange/set=:set`, async (req, res) => {
     const results = await prisma.$queryRaw`
       select distinct time_stamp as 'date', set_value 
       from set_data_table 
-      where set_name = ${set} and time_stamp > "2022-03-22" 
+      where set_name = ${set} and deleted = 0 and time_stamp > "2022-03-22"
       order by date asc`;
-    res.status(200).json(results);
+    res.status(200).json(
+      results.map((el) => ({
+        date: el.date.toISOString().split("T")[0],
+        set_value: el.set_value.toFixed(2),
+      }))
+    );
   } catch (e) {
+    console.error(e);
     res.status(400).send({ msg: e });
   }
 });

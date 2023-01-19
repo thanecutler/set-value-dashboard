@@ -70,3 +70,11 @@ export const calculateAveragePercentChange = (arr, lastNumDays) => {
   }
   return percentages.reduce((sum, a) => sum + a, 0).toFixed(2) * 100;
 };
+
+export const convertTZ = (date, tzString) => {
+  return new Date(
+    (typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", {
+      timeZone: tzString,
+    })
+  );
+};

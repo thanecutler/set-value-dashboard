@@ -61,14 +61,14 @@ const CardPriceHistory = () => {
   }, [cardName, setName]);
   return (
     <div>
-      <div className="setCardTableHeader">
-        <div className="selectColumn">
+      <div className='setCardTableHeader'>
+        <div className='selectColumn'>
           <h4>{cardName}</h4>
           <h5>
             <Link to={`/charts/${setName}`}>{setName}</Link>
           </h5>
         </div>
-        <div className="selectColumn">
+        <div className='selectColumn'>
           {setList.length > 0 && (
             <Select
               placeholder={`${setName} - cards`}
@@ -101,14 +101,13 @@ const CardPriceHistory = () => {
               Math.min.apply(null, data.map((el) => el.price).filter(Boolean))
             )}
             <br />
-            Average change:{" "}
-            {calculateAveragePercentChange(data.map((el) => el.price))}%
           </div>
           <Chart
             options={chartOptions}
             series={series}
-            type="line"
-            height="auto"
+            type='line'
+            height='300'
+            width='50%'
           />
         </>
       )}

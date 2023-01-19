@@ -6,9 +6,10 @@ import { Spinner, TabContent, TabPane } from "reactstrap";
 import { commaFormatter, formatDate, priceFormatter } from "../helper/format";
 import CardTable from "./dumb/CardTable";
 import SetSidebar from "./Nav/SetSidebar";
+import PriceHistory from "./PriceHistory/PriceHistory";
 
 const ChartData = ({ setList, goToSet }) => {
-  const { set, sortDirection } = useParams();
+  const { set, date } = useParams();
   const [data, setData] = useState([]);
   const [activeTab, setActiveTab] = useState("chartData");
   const [cardData, setCardData] = useState([]);
@@ -68,7 +69,7 @@ const ChartData = ({ setList, goToSet }) => {
       ]);
       setLoading(false);
     });
-    axios.get(`/api/cards/set=${set}/today`).then((res) => {
+    axios.get(`/api/cards/set=${set}/date=${date}`).then((res) => {
       res.data.sort((a, b) => (a.price < b.price ? 1 : -1));
       let remainingCardsTotal = 0;
       let remainingCards = res.data
@@ -88,7 +89,7 @@ const ChartData = ({ setList, goToSet }) => {
       });
       setDonutSeries(res.data.map((el) => el.price).slice(0, 20));
     });
-  }, [set]);
+  }, [set, date]);
   return (
     <div>
       <SetSidebar
@@ -99,27 +100,28 @@ const ChartData = ({ setList, goToSet }) => {
         setList={setList}
         goToSet={goToSet}
       />
-      <div className="setMainContent">
+      <div className='setMainContent'>
         {loading ? (
           <Spinner>Loading...</Spinner>
         ) : (
           <>
-            <div className="setCardTableHeader">
-              <div className="selectColumn">
+            <div className='setCardTableHeader'>
+              <div className='selectColumn'>
                 <h3>
                   {set}{" "}
-                  <span className="grayed">
+                  <span className='grayed'>
                     ({data[data.length - 1].card_count} cards)
                   </span>
                 </h3>
+                <h4>{formatDate(date)}</h4>
               </div>
-              <div className="selectColumn">
+              <div className='selectColumn'>
                 <div>
                   <Link
                     to={`/pricehistory/${set}/${
                       data[0].time_stamp.split("T")[0]
                     }`}
-                    className="grayed"
+                    className='grayed'
                   >
                     Data available from {formatDate(data[0].time_stamp)}
                   </Link>
@@ -127,7 +129,7 @@ const ChartData = ({ setList, goToSet }) => {
               </div>
             </div>
             <TabContent activeTab={activeTab}>
-              <TabPane tabId="chartData">
+              <TabPane tabId='chartData'>
                 <div>
                   Cost of Secret Rares:{" "}
                   {priceFormatter.format(
@@ -144,9 +146,9 @@ const ChartData = ({ setList, goToSet }) => {
                   Cost of remaining cards: $
                   {data[data.length - 1].other_cards_total}
                 </div>
-                <Chart options={chartOptions} series={series} height="600px" />
+                <Chart options={chartOptions} series={series} height='600px' />
               </TabPane>
-              <TabPane tabId="cardList">
+              <TabPane tabId='cardList'>
                 <CardTable
                   data={cardData}
                   series={series}
@@ -155,13 +157,16 @@ const ChartData = ({ setList, goToSet }) => {
                   addToChart
                 />
               </TabPane>
-              <TabPane tabId="priceComposition">
+              <TabPane tabId='priceComposition'>
                 <Chart
                   options={donutOptions}
                   series={donutSeries}
-                  type="donut"
-                  height="600px"
+                  type='donut'
+                  height='600px'
                 />
+              </TabPane>
+              <TabPane tabId='priceHistory'>
+                <PriceHistory set={set} setActiveTab={setActiveTab} />
               </TabPane>
             </TabContent>
           </>

@@ -16,6 +16,8 @@ model card_data_table {
   card_number String?   @db.VarChar(45)
   url         String?   @db.VarChar(255)
   time_stamp  DateTime? @default(dbgenerated("(curdate())")) @db.Date
+  card_id     Int?
+  deleted     Int       @default(0) @db.TinyInt
 
   @@index([card_name], map: "card_name_index")
   @@index([time_stamp], map: "time_stamp_index")
@@ -45,6 +47,7 @@ model set_data_table {
   url        String?   @db.VarChar(150)
   card_count Int?
   time_stamp DateTime? @default(dbgenerated("(curdate())")) @db.Date
+  deleted    Int       @default(0) @db.TinyInt
 
   @@index([set_name, time_stamp], map: "set_name_timestamp")
 }
@@ -61,4 +64,11 @@ model users {
   username String @db.VarChar(45)
   password String @db.VarChar(255)
   email    String @db.VarChar(255)
+}
+
+model card_id_table {
+  card_id     Int    @id @default(autoincrement())
+  card_name   String @db.VarChar(255)
+  set_name    String @db.VarChar(255)
+  card_number String @db.VarChar(255)
 }

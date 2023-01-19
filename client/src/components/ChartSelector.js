@@ -17,10 +17,10 @@ const ChartSelector = () => {
   }, []);
 
   return (
-    <div className="chartContainer">
+    <div className='chartContainer'>
       <Routes>
         <Route
-          path="/:set"
+          path='/:set/:date'
           element={
             <>
               <ChartData setList={setList} goToSet={goToSet} />

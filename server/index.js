@@ -20,6 +20,13 @@ app.use(
   })
 );
 
+const logRequest = (req, res, next) => {
+  console.log(req.url);
+  next();
+};
+
+app.use(logRequest);
+
 app.use("/api/sets", sets);
 app.use(
   session({

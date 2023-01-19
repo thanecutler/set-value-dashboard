@@ -21,23 +21,23 @@ ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<App />}>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
-          <Route path="/charts/*" element={<ChartSelector />} />
-          <Route path="/allsets" element={<AllSets />} />
-          <Route path="/pricehistory" element={<PriceHistory />} />
-          <Route path="/pricehistory/:set/:date" element={<SetCardTable />} />
-          <Route path="/trendcomparison" element={<TrendComparison />} />
-          <Route path="/stats" element={<Stats />} />
-          <Route path="/psa" element={<PSATable />} />
-          <Route path="/psa/add" element={<AddPSA />} />
-          <Route path="/search/name=:searchName" element={<SearchResults />} />
+        <Route path='/' element={<App />}>
+          <Route path='/login' element={<Login />} />
+          <Route path='/signup' element={<SignUp />} />
+          <Route path='/charts/*' element={<ChartSelector />} />
+          <Route path='/allsets' element={<AllSets />} />
+          <Route path='/pricehistory' element={<PriceHistory />} />
+          <Route path='/pricehistory/:set/:date' element={<SetCardTable />} />
+          <Route path='/trendcomparison' element={<TrendComparison />} />
+          <Route path='/stats' element={<Stats />} />
+          <Route path='/psa' element={<PSATable />} />
+          <Route path='/psa/add' element={<AddPSA />} />
+          <Route path='/search/name=:searchName' element={<SearchResults />} />
           <Route
-            path="/card/:setName/:cardName"
+            path='/card/:setName/:cardName'
             element={<CardPriceHistory />}
           />
-          <Route path="*" element={<NotFound />} />
+          <Route path='*' element={<NotFound />} />
         </Route>
       </Routes>
     </BrowserRouter>
