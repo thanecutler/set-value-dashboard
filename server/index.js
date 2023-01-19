@@ -5,7 +5,6 @@ const config = require("./config");
 const mysql = require("mysql2");
 const cors = require("cors");
 const path = require("path");
-const bcrypt = require("bcrypt");
 const session = require("express-session");
 const saltRounds = config.saltRounds;
 const helper = require("./helper/helper");
@@ -42,74 +41,6 @@ const db = mysql.createPool(config.db);
 
 app.listen(port, () => {
   console.log(`server running at localhost:${port}`);
-});
-
-app.post(`/api/register`, (req, res) => {
-  const { username, password, email } = req.body;
-  if (!username || !password || !email) {
-    res.status(400).json({ msg: "error: missing parameters" });
-  }
-  db.query(
-    `select * from users where username = ?`,
-    [username],
-    (e, results) => {
-      if (results.length > 0) {
-        res.status(400).json({ msg: "error: username already exists" });
-        return;
-      } else {
-        bcrypt.hash(password, saltRounds, (err, hash) => {
-          if (err) {
-            console.log(err);
-          }
-          db.query(
-            `insert into users (username, password, email) values (?, ?, ?)`,
-            [username, hash, email],
-            (e, results) => {
-              if (e) {
-                console.log(e);
-              }
-              res.status(200).json({ msg: "good" });
-            }
-          );
-        });
-      }
-    }
-  );
-});
-
-app.post(`/api/login`, (req, res) => {
-  const { username, password } = req.body;
-  db.query(
-    `select * from users where username = ?`,
-    [username],
-    (e, results) => {
-      if (e) {
-        console.log(e);
-      }
-      if (!results.length) {
-        res.send({ msg: "Username not found" });
-      }
-      if (results.length) {
-        bcrypt.compare(password, results[0].password, (e, response) => {
-          if (response) {
-            req.session.user = results[0].username;
-            console.log(req.session.user);
-            res.send(results);
-          } else {
-            res.send({ msg: "Incorrect password" });
-          }
-        });
-      }
-    }
-  );
-});
-
-app.get(`/api/login`, (req, res) => {
-  if (req.session.user) {
-    res.send({ loggedIn: true, username: req.session.user });
-  } else {
-    res.send({ loggedIn: false });
-  }
 });
 
 app.get(`/api/databasestats`, (req, res) => {
