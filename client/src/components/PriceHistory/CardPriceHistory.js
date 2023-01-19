@@ -61,31 +61,37 @@ const CardPriceHistory = () => {
   }, [cardName, setName]);
   return (
     <div>
-      <div className='setCardTableHeader'>
-        <div className='selectColumn'>
-          <h4>{cardName}</h4>
-          <h5>
-            <Link to={`/charts/${setName}`}>{setName}</Link>
-          </h5>
-        </div>
-        <div className='selectColumn'>
-          {setList.length > 0 && (
-            <Select
-              placeholder={`${setName} - cards`}
-              options={setList.map((el) => ({
-                label: el.card_name,
-                value: el.card_name,
-              }))}
-              onChange={(e) => goToCard(e.value)}
-              menuPortalTarget={document.body}
-              styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
-            />
-          )}
-        </div>
-      </div>
       {loading && <Spinner>Loading...</Spinner>}
       {!loading && (
         <>
+          <div className='setCardTableHeader'>
+            <div className='selectColumn'>
+              <h4>{cardName}</h4>
+              <h5>
+                <Link
+                  to={`/charts/${setName}/${
+                    data[data.length - 1].time_stamp.split("T")[0]
+                  }`}
+                >
+                  {setName}
+                </Link>
+              </h5>
+            </div>
+            <div className='selectColumn'>
+              {setList.length > 0 && (
+                <Select
+                  placeholder={`${setName} - cards`}
+                  options={setList.map((el) => ({
+                    label: el.card_name,
+                    value: el.card_name,
+                  }))}
+                  onChange={(e) => goToCard(e.value)}
+                  menuPortalTarget={document.body}
+                  styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
+                />
+              )}
+            </div>
+          </div>
           <div>
             Current:{" "}
             <strong>
