@@ -18,8 +18,6 @@ const AllSets = () => {
       setDataList(res.data);
     });
   }, []);
-  const pageSize = 30;
-  const pageCount = Math.ceil(dataList.length / pageSize);
   const handleSortBy = (sortBy) => {
     if (window.localStorage.getItem("sortBy") === sortBy) {
       setAscending(!ascending);
@@ -49,12 +47,6 @@ const AllSets = () => {
       {loading && <Spinner>Loading...</Spinner>}
       {dataList.length > 0 && (
         <div>
-          <PaginationContainer
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            pageCount={pageCount}
-            allSets
-          />
           <div className='setFilterContainer'>
             <Input
               placeholder='Filter'
@@ -122,7 +114,6 @@ const AllSets = () => {
                     ? -1
                     : 0;
                 })
-                .slice(currentPage * pageSize, (currentPage + 1) * pageSize)
                 .map((el) => (
                   <tr key={el.uuid}>
                     <td>
@@ -205,12 +196,6 @@ const AllSets = () => {
               </tr>
             </tbody>
           </Table>
-          <PaginationContainer
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            pageCount={pageCount}
-            allSets
-          />
         </div>
       )}
     </div>

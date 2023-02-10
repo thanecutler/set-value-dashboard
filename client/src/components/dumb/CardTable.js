@@ -83,51 +83,58 @@ const CardTable = ({
   };
   return (
     <div>
-      <PaginationContainer
-        pageCount={pageCount}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-      />
-      <Table hover className="allSetsDataTable">
+      <Table hover className='allSetsDataTable'>
         <thead>
-          <tr key="head">
+          <tr key='head'>
             {addToChart && <th>Add</th>}
-            <th
-              className="clickable "
-              onClick={() => handleSortBy("card_name")}
-            >
-              Title {showArrow("card_name")}
+            <th>
+              <span
+                className='clickable '
+                onClick={() => handleSortBy("card_name")}
+              >
+                Title {showArrow("card_name")}
+              </span>
             </th>
-            <th
-              className="clickable text-end"
-              onClick={() => handleSortBy("price")}
-            >
-              Price {showArrow("price")}
+            <th>
+              <span
+                className='clickable text-end'
+                onClick={() => handleSortBy("price")}
+              >
+                Price {showArrow("price")}
+              </span>
             </th>
-            <th className="text-end">Change</th>
-            <th
-              className="clickable text-end"
-              onClick={() => handleSortBy("prev_value")}
-            >
-              Week {showArrow("prev_value")}
+            <th className='text-end'>Change</th>
+            <th>
+              <span
+                className='clickable text-end'
+                onClick={() => handleSortBy("prev_value")}
+              >
+                Week {showArrow("prev_value")}
+              </span>
             </th>
-            <th
-              className="clickable text-end"
-              onClick={() => handleSortBy("rarity")}
-            >
-              Rarity {showArrow("rarity")}
+            <th>
+              <span
+                className='clickable text-end'
+                onClick={() => handleSortBy("rarity")}
+              >
+                Rarity {showArrow("rarity")}
+              </span>
             </th>
-            <th
-              className="clickable text-end"
-              onClick={() => handleSortBy("set_name")}
-            >
-              Set {showArrow("set_name")}
+            <th>
+              <span
+                className='clickable text-end'
+                onClick={() => handleSortBy("set_name")}
+              >
+                Set {showArrow("set_name")}
+              </span>
             </th>
-            <th
-              className="clickable text-end"
-              onClick={() => handleSortBy("card_number")}
-            >
-              # {showArrow("card_number")}
+            <th>
+              <span
+                className='clickable text-end'
+                onClick={() => handleSortBy("card_number")}
+              >
+                # {showArrow("card_number")}
+              </span>
             </th>
             {/* <th onClick={() => setSortBy("rarity")}>Rarity</th> */}
           </tr>
@@ -140,7 +147,6 @@ const CardTable = ({
                 .includes(filterBy.toLowerCase());
             })
             .sort((a, b) => handleSort(a, b))
-            .slice(currentPage * pageSize, (currentPage + 1) * pageSize)
             .map((el) => (
               <tr key={el.id}>
                 {addToChart && (
@@ -148,7 +154,7 @@ const CardTable = ({
                     onClick={() => addCardToSeries(el.set_name, el.card_name)}
                   >
                     {addingCard === el.card_name ? (
-                      <Spinner size="sm" />
+                      <Spinner size='sm' />
                     ) : (
                       <AddchartIcon
                         opacity={trackedCards.includes(el.card_name) ? 1 : 0.3}
@@ -163,7 +169,7 @@ const CardTable = ({
                 )}
                 <td>
                   {addingCard === el.card_name ? (
-                    <span className="grayed">Adding {el.card_name}...</span>
+                    <span className='grayed'>Adding {el.card_name}...</span>
                   ) : (
                     <Link
                       to={`/card/${el.set_name}/${
@@ -174,13 +180,13 @@ const CardTable = ({
                     </Link>
                   )}
                 </td>
-                <td className="text-end">
-                  <a href={el.url} target="_blank" rel="noreferrer">
+                <td className='text-end'>
+                  <a href={el.url} target='_blank' rel='noreferrer'>
                     {priceFormatter.format(el.price)}
                   </a>
                 </td>
                 {el.prev_value ? (
-                  <td className="text-end">
+                  <td className='text-end'>
                     <span
                       style={{
                         color: getColor(el.price, el.prev_value),
@@ -194,14 +200,14 @@ const CardTable = ({
                   <td></td>
                 )}
                 {el.prev_value ? (
-                  <td className="text-end">
+                  <td className='text-end'>
                     {priceFormatter.format(el.prev_value)}
                   </td>
                 ) : (
                   <td></td>
                 )}
-                <td className="text-end">{el.rarity}</td>
-                <td className="text-end">
+                <td className='text-end'>{el.rarity}</td>
+                <td className='text-end'>
                   <Link
                     to={`/pricehistory/${el.set_name}/${
                       el.time_stamp.split("T")[0]
@@ -210,13 +216,13 @@ const CardTable = ({
                     {el.set_name}
                   </Link>
                 </td>
-                <td className="text-end">{el.card_number}</td>
+                <td className='text-end'>{el.card_number}</td>
                 {/* <td>{el.rarity}</td> */}
               </tr>
             ))}
         </tbody>
       </Table>
-      <div className="mb-3">
+      <div className='mb-3'>
         Showing <strong>{currentPage * pageSize + 1}</strong> -{" "}
         <strong>
           {(currentPage + 1) * pageSize > data.length
@@ -225,11 +231,6 @@ const CardTable = ({
         </strong>{" "}
         of {data.length}
       </div>
-      <PaginationContainer
-        pageCount={pageCount}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-      />
     </div>
   );
 };

@@ -8,7 +8,7 @@ import {
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Chart from "react-apexcharts";
 import Select from "react-select";
-import { Spinner, Table, Container } from "reactstrap";
+import { Spinner } from "reactstrap";
 
 const CardPriceHistory = () => {
   const { cardName, setName } = useParams();
@@ -112,7 +112,7 @@ const CardPriceHistory = () => {
             options={chartOptions}
             series={series}
             type='line'
-            height='300'
+            height='500'
             width='50%'
           />
         </>
