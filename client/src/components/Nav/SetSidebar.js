@@ -14,6 +14,7 @@ const SetSidebar = ({
   data,
   setList,
   goToSet,
+  date,
 }) => {
   return (
     <div className="sidebar">
@@ -25,7 +26,7 @@ const SetSidebar = ({
           value: el.set_name,
         }))}
         onChange={(e) => {
-          goToSet(e.value);
+          goToSet(e.value, date);
         }}
         menuPortalTarget={document.body}
         styles={{ menuPortal: (base) => ({ ...base, zIndex: 9999 }) }}
