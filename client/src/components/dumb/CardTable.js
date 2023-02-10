@@ -8,7 +8,6 @@ import {
 } from "../../helper/format";
 import axios from "axios";
 import AddchartIcon from "@mui/icons-material/Addchart";
-import PaginationContainer from "./PaginationContainer";
 import ArrowDropUp from "@mui/icons-material/ArrowDropUp";
 import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
 
@@ -25,7 +24,6 @@ const CardTable = ({
   );
   const [filterBy] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
-  const pageCount = Math.ceil(data.length / pageSize);
   const [addingCard, setAddingCard] = useState("");
   const handleSortBy = (sortBy) => {
     if (window.localStorage.getItem("sortBy") === sortBy) {
@@ -89,48 +87,45 @@ const CardTable = ({
             {addToChart && <th>Add</th>}
             <th>
               <span
-                className='clickable '
+                className='clickable'
                 onClick={() => handleSortBy("card_name")}
               >
                 Title {showArrow("card_name")}
               </span>
             </th>
-            <th>
-              <span
-                className='clickable text-end'
-                onClick={() => handleSortBy("price")}
-              >
+            <th className='text-end'>
+              <span className='clickable' onClick={() => handleSortBy("price")}>
                 Price {showArrow("price")}
               </span>
             </th>
             <th className='text-end'>Change</th>
-            <th>
+            <th className='text-end'>
               <span
-                className='clickable text-end'
+                className='clickable'
                 onClick={() => handleSortBy("prev_value")}
               >
                 Week {showArrow("prev_value")}
               </span>
             </th>
-            <th>
+            <th className='text-end'>
               <span
-                className='clickable text-end'
+                className='clickable'
                 onClick={() => handleSortBy("rarity")}
               >
                 Rarity {showArrow("rarity")}
               </span>
             </th>
-            <th>
+            <th className='text-end'>
               <span
-                className='clickable text-end'
+                className='clickable'
                 onClick={() => handleSortBy("set_name")}
               >
                 Set {showArrow("set_name")}
               </span>
             </th>
-            <th>
+            <th className='text-end'>
               <span
-                className='clickable text-end'
+                className='clickable'
                 onClick={() => handleSortBy("card_number")}
               >
                 # {showArrow("card_number")}
