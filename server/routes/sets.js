@@ -1,8 +1,8 @@
 const express = require("express");
 const app = express.Router();
 const { PrismaClient } = require("@prisma/client");
-const { calcPercentChange } = require("../helper/helper");
 const prisma = new PrismaClient();
+const { calcPercentChange } = require("../helper/helper");
 var today = new Date();
 var dd = String(today.getDate()).padStart(2, "0");
 var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
@@ -17,6 +17,28 @@ app.get("/set=:setName", async (req, res) => {
     const results = await prisma.set_data_table.findMany({
       where: { set_name: setName, deleted: { lt: 1 } },
     });
+    res.status(200).json(results);
+  } catch (e) {
+    console.error(e);
+    res.status(400).send({ msg: e });
+  }
+});
+
+app.get("/test/cardId=:cardId", async (req, res) => {
+  const { cardId } = req.params;
+  try {
+    const priceHistory = await prisma.card_data_table.findMany({
+      where: { card_id: parseInt(cardId) },
+      select: {
+        price: true,
+        time_stamp: true,
+      },
+    });
+    const metadata = await prisma.card_metadata.findUnique({
+      where: { card_id: parseInt(cardId) },
+      include: { set_metadata: true },
+    });
+    const results = { ...metadata, priceHistory };
     res.status(200).json(results);
   } catch (e) {
     console.error(e);

@@ -5,37 +5,30 @@ const config = require("./config");
 const mysql = require("mysql2");
 const cors = require("cors");
 const path = require("path");
-const session = require("express-session");
-const saltRounds = config.saltRounds;
 const helper = require("./helper/helper");
 
+const priceData = require("./routes/pricedata");
 const sets = require("./routes/sets");
+const metadata = require("./routes/metadata");
 
-app.use(express.json());
+app.use(express.json({ limit: "50mb" }));
 app.use(cors());
 app.use(
   express.urlencoded({
     extended: true,
+    limit: "50mb",
   })
 );
 
 const logRequest = (req, res, next) => {
-  console.log(req.url);
+  console.log(Date.now(), req.method, req.url);
   next();
 };
 
 app.use(logRequest);
-
+app.use("/api/pricedata", priceData);
 app.use("/api/sets", sets);
-app.use(
-  session({
-    key: "username",
-    secret: config.sessionSecret,
-    resave: false,
-    saveUninitialized: false,
-    cookie: { expires: 1000 * 60 * 60 * 24 },
-  })
-);
+app.use("/api/metadata", metadata);
 
 const db = mysql.createPool(config.db);
 

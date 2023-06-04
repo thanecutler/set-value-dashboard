@@ -64,8 +64,8 @@ const CardPriceHistory = () => {
       {loading && <Spinner>Loading...</Spinner>}
       {!loading && (
         <>
-          <div className='setCardTableHeader'>
-            <div className='selectColumn'>
+          <div className="setCardTableHeader">
+            <div className="selectColumn">
               <h4>{cardName}</h4>
               <h5>
                 <Link
@@ -77,7 +77,7 @@ const CardPriceHistory = () => {
                 </Link>
               </h5>
             </div>
-            <div className='selectColumn'>
+            <div className="selectColumn">
               {setList.length > 0 && (
                 <Select
                   placeholder={`${setName} - cards`}
@@ -108,13 +108,16 @@ const CardPriceHistory = () => {
             )}
             <br />
           </div>
-          <Chart
-            options={chartOptions}
-            series={series}
-            type='line'
-            height='500'
-            width='50%'
-          />
+          <div>
+            <Chart
+              options={chartOptions}
+              series={series}
+              type="line"
+              height="500"
+              width="50%"
+            />
+            Table data container
+          </div>
         </>
       )}
     </div>

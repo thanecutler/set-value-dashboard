@@ -2,9 +2,6 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { CardBody, Card, CardTitle, CardSubtitle, Button } from "reactstrap";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
-import HistoryIcon from "@mui/icons-material/History";
-import TimelineIcon from "@mui/icons-material/Timeline";
-import ThermostatIcon from "@mui/icons-material/Thermostat";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -17,26 +14,6 @@ const Home = () => {
       title: "All sets",
       subtitle: "Browse price data in chart format for all available sets",
       link: "/allsets",
-    },
-    {
-      icon: <HistoryIcon />,
-      title: "Price history",
-      subtitle: "See detailed, complete set price snapshots by day",
-      link: "/pricehistory",
-    },
-    {
-      icon: <TimelineIcon />,
-      title: "Trend comparison",
-      subtitle: "Compare card price trends on a blank chart - coming soon",
-      link: "/trendcomparison",
-    },
-    {
-      icon: <ThermostatIcon />,
-      title: "Forecasting",
-      subtitle:
-        "Analyze past data to estimate future performance - coming soon",
-      link: "/forecasting",
-      disabled: true,
     },
   ];
   return (

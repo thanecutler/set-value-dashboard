@@ -4,59 +4,32 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = "mysql://python:!QAZ@WSX1qaz2wsx@192.168.1.218:3306/set_data_schema"
+  url      = "mysql://python:!QAZ@WSX1qaz2wsx@192.168.1.172:3306/set_data_schema"
 }
 
 model card_data_table {
-  id          Int       @id @default(autoincrement())
-  card_name   String?   @db.VarChar(255)
-  set_name    String?   @db.VarChar(255)
-  price       Float?    @db.Float
-  rarity      String?   @db.VarChar(255)
-  card_number String?   @db.VarChar(45)
-  url         String?   @db.VarChar(255)
-  time_stamp  DateTime? @default(dbgenerated("(curdate())")) @db.Date
-  card_id     Int?
-  deleted     Int       @default(0) @db.TinyInt
+  id            Int            @id @default(autoincrement())
+  price         Float?         @db.Float
+  time_stamp    DateTime?      @default(dbgenerated("(curdate())")) @db.Date
+  card_id       Int?
+  deleted       Int            @default(0) @db.TinyInt
+  set_id        Int?
+  card_metadata card_metadata? @relation(fields: [card_id], references: [card_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_card_id")
+  set_metadata  set_metadata?  @relation(fields: [set_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_set_id")
 
-  @@index([card_name], map: "card_name_index")
-  @@index([time_stamp], map: "time_stamp_index")
-  @@index([card_name, time_stamp], map: "card_name_time_stamp_index")
-  @@index([set_name], map: "set_name_index")
-  @@index([set_name, time_stamp], map: "set_name_time_stamp_index")
-}
-
-model checklist {
-  id        Int     @id @default(autoincrement())
-  card_name String? @db.VarChar(255)
-  set_name  String? @db.VarChar(255)
-}
-
-model psa_cards {
-  id          Int     @id @default(autoincrement())
-  card_name   String? @db.VarChar(255)
-  set_name    String? @db.VarChar(255)
-  card_number String? @db.VarChar(45)
-  card_grade  Int?
+  @@index([card_id], map: "idx_card_id")
+  @@index([set_id], map: "idk_set_id")
 }
 
 model set_data_table {
-  uuid       String    @id @db.VarChar(45)
+  id         Int       @id @default(autoincrement())
   set_name   String?   @db.VarChar(100)
   set_value  Float?    @db.Float
-  url        String?   @db.VarChar(150)
-  card_count Int?
   time_stamp DateTime? @default(dbgenerated("(curdate())")) @db.Date
   deleted    Int       @default(0) @db.TinyInt
+  set_id     Int?
 
-  @@index([set_name, time_stamp], map: "set_name_timestamp")
-}
-
-model set_info {
-  id           Int     @id @default(autoincrement())
-  set_name     String  @db.VarChar(255)
-  release_date Int?
-  block        String? @db.VarChar(255)
+  @@index([time_stamp], map: "idx_timestamp")
 }
 
 model users {
@@ -66,9 +39,33 @@ model users {
   email    String @db.VarChar(255)
 }
 
-model card_id_table {
-  card_id     Int    @id @default(autoincrement())
-  card_name   String @db.VarChar(255)
-  set_name    String @db.VarChar(255)
-  card_number String @db.VarChar(255)
+model card_metadata {
+  card_id         Int               @id @default(autoincrement())
+  product_id      Int
+  card_name       String            @db.VarChar(255)
+  set_id          Int
+  card_number     String            @db.VarChar(255)
+  url             String?           @db.VarChar(255)
+  rarity          String?           @db.VarChar(45)
+  card_data_table card_data_table[]
+  set_metadata    set_metadata      @relation(fields: [set_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_l_id")
+
+  @@index([set_id], map: "fk_l_id")
+  @@index([card_id], map: "idx_card_id")
+  @@index([product_id], map: "idx_product_id")
+}
+
+model set_metadata {
+  id                 Int               @id @default(autoincrement())
+  set_name           String            @db.VarChar(255)
+  formatted_set_name String?           @db.VarChar(255)
+  url                String            @db.VarChar(255)
+  card_count         Int
+  is_deleted         Int               @default(0)
+  release_year       Int?
+  set_block          String?           @db.VarChar(255)
+  card_data_table    card_data_table[]
+  card_metadata      card_metadata[]
+
+  @@index([set_name], map: "idx_set_name")
 }

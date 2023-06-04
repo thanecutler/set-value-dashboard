@@ -3,7 +3,6 @@ import axios from "axios";
 import { Input, Table, Spinner } from "reactstrap";
 import { priceFormatter, getColor, formatDate } from "../../helper/format";
 import { Link } from "react-router-dom";
-import PaginationContainer from "../dumb/PaginationContainer";
 import ArrowDropUp from "@mui/icons-material/ArrowDropUp";
 import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
 const AllSets = () => {
@@ -13,7 +12,7 @@ const AllSets = () => {
   const [sortBy, setSortBy] = useState("set_name");
   const [currentPage, setCurrentPage] = useState(0);
   useEffect(() => {
-    axios.get("/api/sets/today").then((res) => {
+    axios.get("/api/metadata/sets/all").then((res) => {
       setLoading(false);
       setDataList(res.data);
     });
@@ -47,46 +46,46 @@ const AllSets = () => {
       {loading && <Spinner>Loading...</Spinner>}
       {dataList.length > 0 && (
         <div>
-          <div className='setFilterContainer'>
+          <div className="setFilterContainer">
             <Input
-              placeholder='Filter'
+              placeholder="Filter"
               onChange={(e) => {
                 setFilterBy(e.target.value);
                 setCurrentPage(0);
               }}
-              spellCheck='false'
+              spellCheck="false"
             />
           </div>
-          <Table hover className='allSetsDataTable'>
+          <Table hover className="allSetsDataTable">
             <thead>
               <tr>
                 <th
-                  className='clickable'
+                  className="clickable"
                   onClick={() => handleSortBy("set_name")}
                 >
                   Set name {showArrow("set_name")}{" "}
                 </th>
-                <th className='text-end'></th>
+                <th className="text-end"></th>
                 <th
-                  className='clickable text-end'
+                  className="clickable text-end"
                   onClick={() => handleSortBy("set_value")}
                 >
                   Today {showArrow("set_value")}
                 </th>
                 <th
-                  className='clickable text-end'
+                  className="clickable text-end"
                   onClick={() => handleSortBy("prev_value")}
                 >
                   14 day prev {showArrow("prev_value")}{" "}
                 </th>
                 <th
-                  className='clickable text-end'
+                  className="clickable text-end"
                   onClick={() => handleSortBy("percent_change")}
                 >
                   Change {showArrow("percent_change")}
                 </th>
                 <th
-                  className='clickable text-end'
+                  className="clickable text-end"
                   onClick={() => handleSortBy("card_count")}
                 >
                   Card count {showArrow("card_count")}
@@ -96,49 +95,47 @@ const AllSets = () => {
             <tbody>
               {dataList
                 .filter((el) => {
-                  return (el.set_name || el.url)
+                  return (el.formatted_set_name || el.set_name)
                     .toLowerCase()
                     .includes(filterBy.toLowerCase());
                 })
-                .sort((a, b) => {
-                  if (ascending) {
-                    return a[sortBy] > b[sortBy]
-                      ? 1
-                      : b[sortBy] > a[sortBy]
-                      ? -1
-                      : 0;
-                  }
-                  return a[sortBy] < b[sortBy]
-                    ? 1
-                    : b[sortBy] < a[sortBy]
-                    ? -1
-                    : 0;
-                })
+                // .sort((a, b) => {
+                //   if (ascending) {
+                //     return a[sortBy] > b[sortBy]
+                //       ? 1
+                //       : b[sortBy] > a[sortBy]
+                //       ? -1
+                //       : 0;
+                //   }
+                //   return a[sortBy] < b[sortBy]
+                //     ? 1
+                //     : b[sortBy] < a[sortBy]
+                //     ? -1
+                //     : 0;
+                // })
                 .map((el) => (
-                  <tr key={el.uuid}>
+                  <tr key={el.id}>
                     <td>
-                      <Link
-                        to={`/charts/${el.set_name}/${
-                          el.time_stamp.split("T")[0]
-                        }`}
-                      >
-                        {el.set_name || el.url}
-                      </Link>
+                      <Link to={`/charts/${el.set_name}/`}>
+                        {el.formatted_set_name || el.set_name}
+                      </Link>{" "}
+                      ({el.release_year})
                     </td>
-                    <td className='text-end'>
-                      <img
+                    <td className="text-end">
+                      Chart thumbnail image
+                      {/* <img
                         src={`http://192.168.1.218:5001/charts/${el.set_name}`}
-                        width='120'
-                        height='40'
-                      />
+                        width="120"
+                        height="40"
+                      /> */}
                     </td>
-                    <td className='text-end'>
+                    <td className="text-end">
                       {priceFormatter.format(el.set_value)}
                     </td>
-                    <td className='text-end'>
+                    <td className="text-end">
                       {priceFormatter.format(el.prev_value)}
                     </td>
-                    <td className='text-end'>
+                    <td className="text-end">
                       <span
                         style={{
                           color: getColor(el.set_value, el.prev_value),
@@ -148,8 +145,8 @@ const AllSets = () => {
                         {el.percent_change}%
                       </span>
                     </td>
-                    <td className='text-end'>
-                      <a href={el.url} target='_blank' rel='noreferrer'>
+                    <td className="text-end">
+                      <a href={el.url} target="_blank" rel="noreferrer">
                         {el.card_count}
                       </a>
                     </td>
@@ -158,7 +155,7 @@ const AllSets = () => {
               <tr>
                 <td>Total</td>
                 <td></td>
-                <td className='text-end'>
+                <td className="text-end">
                   {priceFormatter.format(
                     dataList
                       .filter((el) => {
@@ -170,7 +167,7 @@ const AllSets = () => {
                       .reduce((prev, curr) => prev + curr, 0)
                   )}
                 </td>
-                <td className='text-end'>
+                <td className="text-end">
                   {priceFormatter.format(
                     dataList
                       .filter((el) => {
@@ -183,7 +180,7 @@ const AllSets = () => {
                   )}
                 </td>
                 <td></td>
-                <td className='text-end'>
+                <td className="text-end">
                   {dataList
                     .filter((el) => {
                       return (el.set_name || el.url)
